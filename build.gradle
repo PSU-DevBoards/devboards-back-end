@@ -37,8 +37,8 @@ test {
 
 jacocoTestReport {
     reports {
-        xml.enabled(true)
-        html.enabled(true)
+        xml.enabled true
+        html.enabled true
     }
     dependsOn test // tests are required to run before generating the report
 }
@@ -48,5 +48,6 @@ sonarqube {
         property 'sonar.projectKey', 'PSU-DevBoards_devboards-back-end'
         property 'sonar.organization', 'psu-devboards'
         property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.exclusions', 'models/**'
     }
 }
