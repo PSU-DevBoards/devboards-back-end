@@ -32,7 +32,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport // report is always generated after tests run
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
@@ -40,7 +40,15 @@ jacocoTestReport {
         xml.enabled true
         html.enabled true
     }
-    dependsOn test // tests are required to run before generating the report
+    dependsOn test
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**/models/**/*",
+                    "**/DbapiApplication.class"
+            ])
+        }))
+    }
 }
 
 sonarqube {
@@ -48,6 +56,5 @@ sonarqube {
         property 'sonar.projectKey', 'PSU-DevBoards_devboards-back-end'
         property 'sonar.organization', 'psu-devboards'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.exclusions', 'models/**'
     }
 }
