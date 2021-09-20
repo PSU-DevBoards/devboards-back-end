@@ -36,6 +36,10 @@ test {
 }
 
 jacocoTestReport {
+    reports {
+        xml.enabled(true)
+        html.enabled(true)
+    }
     dependsOn test // tests are required to run before generating the report
 }
 
