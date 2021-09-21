@@ -30,6 +30,7 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java:8.0.25'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.4'
+    testImplementation 'org.mockito:mockito-core'
 }
 
 test {
@@ -47,6 +48,7 @@ jacocoTestReport {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
                     "**/models/**/*",
+                    "**/configs/**/*",
                     "**/DbapiApplication.class"
             ])
         }))
