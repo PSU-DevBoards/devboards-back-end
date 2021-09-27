@@ -1,7 +1,7 @@
 package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.WorkItem;
-import com.psu.devboards.dbapi.repositories.WorkItemRepository;
+import com.psu.devboards.dbapi.services.WorkItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,17 +18,17 @@ import static org.mockito.Mockito.when;
 class WorkItemControllerTest {
 
     @Mock
-    WorkItemRepository workItemRepository;
+    WorkItemService workItemService;
 
     @InjectMocks
     WorkItemController workItemController;
 
     @Test
     void listWorkItems() {
-        when(workItemRepository.findAll()).thenReturn(Collections.singletonList(new WorkItem()));
+        when(workItemService.getAllWorkItems()).thenReturn(Collections.singletonList(new WorkItem()));
 
-        List<WorkItem> workItems = workItemController.listWorkItems();
+        List<WorkItem> workItems = workItemController.listWorkItems(null);
 
-        assertEquals(1,workItems.size());
+        assertEquals(1, workItems.size());
     }
 }

@@ -1,1 +1,2 @@
-INSERT INTO work_item (name) VALUES ('test');
+INSERT INTO work_item (name)
+VALUES ('test');
