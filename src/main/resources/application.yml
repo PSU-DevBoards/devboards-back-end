@@ -4,5 +4,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dev-kdnjsccp.us.auth0.com/
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
 auth0:
   audience: https://devboards/api
+email:
+  from: ${EMAIL_FROM}
