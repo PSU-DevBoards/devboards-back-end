@@ -8,8 +8,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.time.Instant;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class AudienceValidatorTest {
