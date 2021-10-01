@@ -33,7 +33,7 @@ public class OrganizationController {
     public Organization getOrganization(@PathVariable Integer id, Principal principal) {
         User user = userService.findByUsername(principal.getName());
 
-        return organizationService.findOrganization(user, id);
+        return organizationService.findOrganizationById(user, id);
     }
 
     @PostMapping
@@ -48,13 +48,13 @@ public class OrganizationController {
                                   @Valid @RequestBody OrganizationRequest organizationRequest, Principal principal) {
         User user = userService.findByUsername(principal.getName());
 
-        return organizationService.updateOrganization(user, id, organizationRequest);
+        return organizationService.updateOrganizationById(user, id, organizationRequest);
     }
 
     @DeleteMapping("/{id}")
     public void deleteOrganization(@PathVariable Integer id, Principal principal) {
         User user = userService.findByUsername(principal.getName());
 
-        organizationService.deleteOrganization(user, id);
+        organizationService.deleteOrganizationById(user, id);
     }
 }

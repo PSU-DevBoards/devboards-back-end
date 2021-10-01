@@ -29,7 +29,7 @@ public class OrganizationService {
      * @param id The id of the organization to find.
      * @return The found organization.
      */
-    public Organization findOrganization(User user, Integer id) {
+    public Organization findOrganizationById(User user, Integer id) {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found."));
 
@@ -58,8 +58,8 @@ public class OrganizationService {
      * @param organizationRequest The attributes to update.
      * @return The updated organization.
      */
-    public Organization updateOrganization(User user, Integer id, OrganizationRequest organizationRequest) {
-        Organization organization = findOrganization(user, id);
+    public Organization updateOrganizationById(User user, Integer id, OrganizationRequest organizationRequest) {
+        Organization organization = findOrganizationById(user, id);
         validateUpdatePermission(user, organization);
 
         organization.setName(organizationRequest.getName());
@@ -71,8 +71,8 @@ public class OrganizationService {
      * @param user The user making the request.
      * @param id The id of the organization to delete.
      */
-    public void deleteOrganization(User user, Integer id) {
-        Organization organization = findOrganization(user, id);
+    public void deleteOrganizationById(User user, Integer id) {
+        Organization organization = findOrganizationById(user, id);
         validateDeletePermission(user, organization);
 
         organizationRepository.delete(organization);

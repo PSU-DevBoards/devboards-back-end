@@ -53,7 +53,7 @@ class OrganizationServiceTest {
         Organization expected = new Organization(1, "newName", user, Collections.singletonList(user));
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
-        organizationService.updateOrganization(user, organization.getId(), new OrganizationRequest("newName"));
+        organizationService.updateOrganizationById(user, organization.getId(), new OrganizationRequest("newName"));
 
         verify(organizationRepository, times(1)).save(expected);
     }
@@ -64,7 +64,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(1)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.updateOrganization(user, 1, request));
+                () -> organizationService.updateOrganizationById(user, 1, request));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -75,7 +75,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.updateOrganization(user, organization.getId(), request));
+                () -> organizationService.updateOrganizationById(user, organization.getId(), request));
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
@@ -83,7 +83,7 @@ class OrganizationServiceTest {
     void shouldDeleteOrganizationIfUserIsOwner() {
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
-        organizationService.deleteOrganization(user, organization.getId());
+        organizationService.deleteOrganizationById(user, organization.getId());
 
         verify(organizationRepository, times(1)).delete(organization);
     }
@@ -93,7 +93,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(1)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.deleteOrganization(user, 1));
+                () -> organizationService.deleteOrganizationById(user, 1));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -103,7 +103,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.deleteOrganization(user, organization.getId()));
+                () -> organizationService.deleteOrganizationById(user, organization.getId()));
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
@@ -111,7 +111,7 @@ class OrganizationServiceTest {
     void shouldFindOrganizationIfUserIsInOrg() {
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
-        organizationService.findOrganization(user, organization.getId());
+        organizationService.findOrganizationById(user, organization.getId());
 
         verify(organizationRepository, times(1)).findById(organization.getId());
     }
@@ -121,7 +121,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(1)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.findOrganization(user, 1));
+                () -> organizationService.findOrganizationById(user, 1));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -132,7 +132,7 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.findOrganization(user, organization.getId()));
+                () -> organizationService.findOrganizationById(user, organization.getId()));
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 }
