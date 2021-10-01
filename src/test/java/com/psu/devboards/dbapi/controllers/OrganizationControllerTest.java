@@ -32,23 +32,45 @@ class OrganizationControllerTest {
 
     Principal principal;
     User user;
+    OrganizationRequest organizationRequest;
 
     @BeforeEach
     void setUp() {
         principal = mock(Principal.class);
         user = new User("testUser");
+        organizationRequest = new OrganizationRequest("newOrganization");
+
+        when(principal.getName()).thenReturn(user.getUsername());
+        when(userService.findByUsername(user.getUsername())).thenReturn(user);
     }
 
     @Test
     void shouldCreateOrganization() {
-        OrganizationRequest organizationRequest = new OrganizationRequest("newOrganization");
-
-        when(principal.getName()).thenReturn(user.getUsername());
-        when(userService.findByUsername(user.getUsername())).thenReturn(user);
-
         organizationController.postOrganization(organizationRequest, principal);
 
         verify(organizationService, times(1))
                 .createOrganization(user, organizationRequest.getName());
+    }
+
+    @Test
+    void shouldUpdateOrganization() {
+        organizationController.patchOrganization(1, organizationRequest, principal);
+
+        verify(organizationService, times(1))
+                .updateOrganization(user, 1, organizationRequest);
+    }
+
+    @Test
+    void shouldGetOrganization() {
+        organizationController.getOrganization(1, principal);
+
+        verify(organizationService, times(1)).findOrganization(user, 1);
+    }
+
+    @Test
+    void shouldDeleteOrganization() {
+        organizationController.deleteOrganization(1, principal);
+
+        verify(organizationService, times(1)).deleteOrganization(user, 1);
     }
 }

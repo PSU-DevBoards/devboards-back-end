@@ -35,7 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
                 .and().cors()
-                .and().oauth2ResourceServer().jwt();
+                .and().csrf().disable()
+                .oauth2ResourceServer().jwt();
     }
 
     @Bean

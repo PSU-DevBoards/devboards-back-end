@@ -1,5 +1,7 @@
 package com.psu.devboards.dbapi.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,12 +21,13 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "organization")
 public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(unique = true)
     private String name;
@@ -33,6 +36,7 @@ public class Organization {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    @JsonIgnore
     @ManyToMany(targetEntity = User.class, mappedBy = "organizations", cascade = CascadeType.ALL)
     private List<User> users;
 
