@@ -10,6 +10,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 
+/**
+ * Singleton service for interacting with organizations. Performs all user authorization checks before performing
+ * any operations made with the context of a requesting user.
+ */
 @Service
 public class OrganizationService {
 
@@ -19,6 +23,12 @@ public class OrganizationService {
         this.organizationRepository = organizationRepository;
     }
 
+    /**
+     * Finds an organization by it's id.
+     * @param user The requesting user.
+     * @param id The id of the organization to find.
+     * @return The found organization.
+     */
     public Organization findOrganization(User user, Integer id) {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found."));
@@ -28,12 +38,26 @@ public class OrganizationService {
         return organization;
     }
 
+    /**
+     * Creates a new organization and makes the requesting user an owner. Additionally, makes the requesting user
+     * a member of the new organization.
+     * @param user The requesting user.
+     * @param name The name of the new organization.
+     * @return The created organization.
+     */
     public Organization createOrganization(User user, String name) {
         Organization organization = new Organization(name, user, Collections.singletonList(user));
 
         return organizationRepository.save(organization);
     }
 
+    /**
+     * Updates an organization by it's id.
+     * @param user The user making the request.
+     * @param id The id of the organization to update.
+     * @param organizationRequest The attributes to update.
+     * @return The updated organization.
+     */
     public Organization updateOrganization(User user, Integer id, OrganizationRequest organizationRequest) {
         Organization organization = findOrganization(user, id);
         validateUpdatePermission(user, organization);
@@ -42,6 +66,11 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
+    /**
+     * Deletes an organization by it's id.
+     * @param user The user making the request.
+     * @param id The id of the organization to delete.
+     */
     public void deleteOrganization(User user, Integer id) {
         Organization organization = findOrganization(user, id);
         validateDeletePermission(user, organization);
@@ -49,18 +78,21 @@ public class OrganizationService {
         organizationRepository.delete(organization);
     }
 
+    /* Validates that the user entity has authorizations to view the organization entity */
     private void validateViewPermission(User user, Organization organization) {
         if(!organization.getUsers().contains(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not allowed to view this organization.");
         }
     }
 
+    /* Validates that the user entity has authorizations to update the organization entity */
     private void validateUpdatePermission(User user, Organization organization) {
         if (!user.equals(organization.getOwner())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not allowed to update this organization.");
         }
     }
 
+    /* Validates that the user entity has authorizations to delete the organization entity */
     private void validateDeletePermission(User user, Organization organization) {
         if (!user.equals(organization.getOwner())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not allowed to delete this organization.");
