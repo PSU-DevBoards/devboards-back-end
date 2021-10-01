@@ -29,8 +29,7 @@ public class OrganizationService {
     }
 
     public Organization createOrganization(User user, String name) {
-        Organization organization = new Organization(name, user);
-        organization.setUsers(Collections.singletonList(user));
+        Organization organization = new Organization(name, user, Collections.singletonList(user));
 
         return organizationRepository.save(organization);
     }

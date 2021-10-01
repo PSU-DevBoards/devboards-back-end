@@ -37,11 +37,17 @@ public class Organization {
     private User owner;
 
     @JsonIgnore
-    @ManyToMany(targetEntity = User.class, mappedBy = "organizations", cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = User.class, cascade = CascadeType.MERGE)
     private List<User> users;
 
     public Organization(String name, User owner) {
         this.name = name;
         this.owner = owner;
+    }
+
+    public Organization(String name, User owner, List<User> users) {
+        this.name = name;
+        this.owner = owner;
+        this.users = users;
     }
 }

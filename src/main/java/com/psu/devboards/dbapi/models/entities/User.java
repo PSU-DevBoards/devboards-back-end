@@ -34,7 +34,7 @@ public class User {
     private List<Organization> ownedOrganizations;
 
     @JsonIgnore
-    @ManyToMany(targetEntity = Organization.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Organization.class, mappedBy = "users")
     private List<Organization> organizations;
 
     public User(String username) {
