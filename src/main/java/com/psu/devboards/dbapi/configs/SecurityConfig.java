@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
                 .and().cors()
-                .and().csrf().disable()
+                .and().csrf().disable() //NOSONAR Stateless REST API, and auth is not passed in cookies
                 .oauth2ResourceServer().jwt();
     }
 
