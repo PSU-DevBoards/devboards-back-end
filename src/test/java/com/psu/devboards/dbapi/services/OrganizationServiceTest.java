@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +39,8 @@ class OrganizationServiceTest {
     @BeforeEach
     void setUp() {
         user = new User("testUser");
-        organization = new Organization(1, "newOrganization", user, Collections.singletonList(user));
+        organization = new Organization(1, "newOrganization", user,
+                new HashSet<>(Collections.singletonList(user)));
     }
 
     @Test
@@ -50,7 +53,7 @@ class OrganizationServiceTest {
 
     @Test
     void shouldUpdateOrganizationIfUserIsOwner() {
-        Organization expected = new Organization(1, "newName", user, Collections.singletonList(user));
+        Organization expected = new Organization(1, "newName", user, Collections.singleton(user));
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         organizationService.updateOrganizationById(user, organization.getId(), new OrganizationRequest("newName"));
@@ -128,11 +131,51 @@ class OrganizationServiceTest {
     @Test
     void findShouldThrow403IfUserDoesNotHavePermission() {
         organization.setOwner(null);
-        organization.setUsers(Collections.emptyList());
+        organization.setUsers(Collections.emptySet());
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> organizationService.findOrganizationById(user, organization.getId()));
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
+    void shouldListOrganizationUsers() {
+        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
+
+        Set<User> organizationUsers = organizationService.getOrganizationUsers(user, organization.getId());
+        assertEquals(organization.getUsers(), organizationUsers);
+    }
+
+    @Test
+    void shouldAddOrganizationUser() {
+        User addedUser = new User("addedUser");
+        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
+
+        organizationService.addOrganizationUser(user, organization.getId(), addedUser);
+
+        organization.getUsers().add(addedUser);
+        verify(organizationRepository, times(1)).save(organization);
+    }
+
+    @Test
+    void shouldThrow403IfAttemptingToRemoveOwner() {
+        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> organizationService.removeOrganizationUser(user, 1, user));
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
+    void shouldRemoveUser() {
+        User userToRemove = new User("userToRemove");
+        organization.getUsers().add(userToRemove);
+        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
+
+        organizationService.removeOrganizationUser(user, organization.getId(), userToRemove);
+
+        organization.getUsers().remove(userToRemove);
+        verify(organizationRepository, times(1)).save(organization);
     }
 }
