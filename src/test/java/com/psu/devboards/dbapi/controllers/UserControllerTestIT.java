@@ -26,11 +26,11 @@ class UserControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldReturnOkWhenAuthorized() throws Exception {
-        mockMvc.perform(get("/user/me")).andExpect(status().isOk());
+        mockMvc.perform(get("/users/me")).andExpect(status().isOk());
     }
 
     @Test
     void shouldReturnUnauthorizedWhenNoUser() throws Exception {
-        mockMvc.perform(get("/user/me")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/users/me")).andExpect(status().isUnauthorized());
     }
 }
