@@ -19,7 +19,6 @@ public class UserController {
 
     @GetMapping("/me")
     public User getMe(Principal principal){
-        User user = userService.findByUsername(principal.getName());
-        return user;
+        return userService.findByUsername(principal.getName());
     }
 }
