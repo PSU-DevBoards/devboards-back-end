@@ -3,7 +3,9 @@ package com.psu.devboards.dbapi.models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,7 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -37,15 +39,12 @@ public class Organization {
     private User owner;
 
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.MERGE)
-    private List<User> users;
+    private Set<User> users;
 
-    public Organization(String name, User owner) {
-        this.name = name;
-        this.owner = owner;
-    }
-
-    public Organization(String name, User owner, List<User> users) {
+    public Organization(String name, User owner, Set<User> users) {
         this.name = name;
         this.owner = owner;
         this.users = users;
