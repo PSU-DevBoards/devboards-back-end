@@ -80,6 +80,6 @@ class RoleControllerTestIT {
         MvcResult response = mockMvc.perform(get("/roles/" + role.getId() + "/permissions"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"id\":1,\"key\":\"testPermission\"}]", response.getResponse().getContentAsString());
+        assertEquals("[{\"id\":11,\"key\":\"testPermission\"}]", response.getResponse().getContentAsString());
     }
 }

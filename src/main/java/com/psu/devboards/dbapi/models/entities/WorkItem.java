@@ -20,4 +20,7 @@ public class WorkItem {
 
     @Column
     private String name;
+
+    @Column
+    private String type;
 }
