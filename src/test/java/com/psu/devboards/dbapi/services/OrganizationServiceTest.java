@@ -1,6 +1,7 @@
 package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
+import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
@@ -13,10 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,13 +35,16 @@ class OrganizationServiceTest {
     OrganizationService organizationService;
 
     User user;
+    User otherUser;
     Organization organization;
 
     @BeforeEach
     void setUp() {
         user = new User("testUser");
-        organization = new Organization(1, "newOrganization", user,
-                new HashSet<>(Collections.singletonList(user)));
+        otherUser = new User("otherUser");
+        organization = new Organization(1, "newOrganization", user);
+        organization.setUsers(new HashSet<>(Arrays.asList(new OrganizationUser(organization, user),
+                new OrganizationUser(organization, otherUser))));
     }
 
     @Test
@@ -53,7 +57,8 @@ class OrganizationServiceTest {
 
     @Test
     void shouldUpdateOrganizationIfUserIsOwner() {
-        Organization expected = new Organization(1, "newName", user, Collections.singleton(user));
+        Organization expected = new Organization(1, "newName", user);
+        expected.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(expected, user))));
         when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
 
         organizationService.updateOrganizationById(user, organization.getId(), new OrganizationRequest("newName"));
@@ -137,45 +142,5 @@ class OrganizationServiceTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> organizationService.findOrganizationById(user, organization.getId()));
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-    }
-
-    @Test
-    void shouldListOrganizationUsers() {
-        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
-
-        Set<User> organizationUsers = organizationService.getOrganizationUsers(user, organization.getId());
-        assertEquals(organization.getUsers(), organizationUsers);
-    }
-
-    @Test
-    void shouldAddOrganizationUser() {
-        User addedUser = new User("addedUser");
-        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
-
-        organizationService.addOrganizationUser(user, organization.getId(), addedUser);
-
-        organization.getUsers().add(addedUser);
-        verify(organizationRepository, times(1)).save(organization);
-    }
-
-    @Test
-    void shouldThrow403IfAttemptingToRemoveOwner() {
-        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> organizationService.removeOrganizationUser(user, 1, user));
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-    }
-
-    @Test
-    void shouldRemoveUser() {
-        User userToRemove = new User("userToRemove");
-        organization.getUsers().add(userToRemove);
-        when(organizationRepository.findById(organization.getId())).thenReturn(Optional.ofNullable(organization));
-
-        organizationService.removeOrganizationUser(user, organization.getId(), userToRemove);
-
-        organization.getUsers().remove(userToRemove);
-        verify(organizationRepository, times(1)).save(organization);
     }
 }

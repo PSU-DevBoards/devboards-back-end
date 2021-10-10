@@ -60,7 +60,7 @@ class JwtUserFilterTest {
     void shouldAddUserToDatabaseIfDoesNotExistYet() throws ServletException, IOException {
         when(request.getUserPrincipal()).thenReturn(principal);
         when(principal.getName()).thenReturn("testUser");
-        when(userService.findByUsername("testUser")).thenReturn(null);
+        when(userService.getByUserName("testUser")).thenReturn(null);
         when(userService.saveUser(any())).thenReturn(null);
 
         jwtUserFilter.doFilterInternal(request, response, filterChain);
@@ -72,7 +72,7 @@ class JwtUserFilterTest {
     void shouldNotAddUserToDatabaseIfAlreadyExists() throws ServletException, IOException {
         when(request.getUserPrincipal()).thenReturn(principal);
         when(principal.getName()).thenReturn("testUser");
-        when(userService.findByUsername("testUser")).thenReturn(user);
+        when(userService.getByUserName("testUser")).thenReturn(user);
 
         jwtUserFilter.doFilterInternal(request, response, filterChain);
 

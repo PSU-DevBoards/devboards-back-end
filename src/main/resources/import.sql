@@ -1,1 +1,3 @@
-INSERT INTO work_item (name) VALUES ('test');
+INSERT INTO role (name)
+VALUES ('Developer'),
+       ('Scrum Master');

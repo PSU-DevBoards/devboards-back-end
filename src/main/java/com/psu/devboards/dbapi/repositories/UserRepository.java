@@ -3,8 +3,10 @@ package com.psu.devboards.dbapi.repositories;
 import com.psu.devboards.dbapi.models.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+import java.util.Optional;
 
-    User findById(Integer id);
+public interface UserRepository extends JpaRepository<User, Long> {
+    User getByUsername(String username);
+
+    Optional<User> findById(Integer id);
 }
