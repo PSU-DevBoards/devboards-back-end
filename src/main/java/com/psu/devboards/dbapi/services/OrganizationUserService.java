@@ -11,6 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
 
+/**
+ * Singleton service for interacting with organization users. Performs all user authorization checks before performing
+ * any operations made with the context of a requesting user.
+ */
 @Service
 public class OrganizationUserService {
 
