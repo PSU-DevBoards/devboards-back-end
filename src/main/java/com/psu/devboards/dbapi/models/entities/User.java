@@ -13,7 +13,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
@@ -40,8 +39,8 @@ public class User {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(targetEntity = Organization.class, mappedBy = "users")
-    private Set<Organization> organizations;
+    @OneToMany(mappedBy = "user")
+    private Set<OrganizationUser> organizations;
 
     public User(String username) {
         this.username = username;

@@ -15,8 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
@@ -41,12 +41,17 @@ public class Organization {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(targetEntity = User.class, cascade = CascadeType.MERGE)
-    private Set<User> users;
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrganizationUser> users;
 
-    public Organization(String name, User owner, Set<User> users) {
+    public Organization(Integer id, String name, User owner) {
+        this.id = id;
         this.name = name;
         this.owner = owner;
-        this.users = users;
+    }
+
+    public Organization(String name, User owner) {
+        this.name = name;
+        this.owner = owner;
     }
 }

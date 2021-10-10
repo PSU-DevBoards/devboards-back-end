@@ -31,7 +31,7 @@ public class JwtUserFilter extends OncePerRequestFilter {
         Principal principal = request.getUserPrincipal();
 
         if (principal != null) {
-            User user = userService.findByUsername(principal.getName());
+            User user = userService.getByUserName(principal.getName());
             if (user == null) {
                 user = new User(principal.getName());
                 userService.saveUser(user);

@@ -1,11 +1,10 @@
 package com.psu.devboards.dbapi.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.psu.devboards.dbapi.models.entities.Organization;
+import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
-import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
 import com.psu.devboards.dbapi.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -46,10 +43,12 @@ class OrganizationControllerTestIT {
 
     @Autowired
     OrganizationRepository organizationRepository;
+
     ObjectMapper objectMapper;
     User user;
     User user2;
     Organization organization;
+
     @MockBean
     @SuppressWarnings("unused")
     private JwtDecoder jwtDecoder;
@@ -59,8 +58,11 @@ class OrganizationControllerTestIT {
         objectMapper = new ObjectMapper();
 
         user = userRepository.save(new User("testUser"));
-        organization = organizationRepository
-                .save(new Organization("testOrganization", user, new HashSet<>(Collections.singleton(user))));
+
+        organization = new Organization("testOrganization", user);
+        organization = organizationRepository.save(organization);
+        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user))));
+        organization = organizationRepository.save(organization);
 
         user2 = userRepository.save(new User("testUser2"));
     }
@@ -115,71 +117,5 @@ class OrganizationControllerTestIT {
                 .readValue(response.getResponse().getContentAsString(), Organization.class);
 
         assertEquals(organization.getId(), retrievedOrganization.getId());
-    }
-
-    @Test
-    @WithMockUser(username = "testUser")
-    void shouldGetOrganizationUsers() throws Exception {
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
-        Set<User> retrievedUsers = objectMapper.readValue(response.getResponse().getContentAsString(),
-                new TypeReference<Set<User>>() {
-                });
-
-        assertEquals(organization.getUsers(), retrievedUsers);
-    }
-
-    @Test
-    @WithMockUser(username = "testUser")
-    void shouldAddOrganizationUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest(user2.getId());
-
-        mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
-                        .content(objectMapper.writeValueAsString(userRequest))
-                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
-        Set<User> retrievedUsers = objectMapper.readValue(response.getResponse().getContentAsString(),
-                new TypeReference<Set<User>>() {
-                });
-
-        assertEquals(retrievedUsers, new HashSet<>(Arrays.asList(user, user2)));
-    }
-
-    @Test
-    @WithMockUser(username = "testUser")
-    void shouldRemoveOrganizationUser() throws Exception {
-        User userToRemove = userRepository.save(new User("userToRemove"));
-        organization.getUsers().add(userToRemove);
-        organizationRepository.save(organization);
-
-        mockMvc.perform(delete("/organizations/" + organization.getId() + "/users/" + userToRemove.getId()))
-                .andExpect(status().isOk());
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
-        Set<User> retrievedUsers = objectMapper.readValue(response.getResponse().getContentAsString(),
-                new TypeReference<Set<User>>() {
-                });
-
-        assertEquals(retrievedUsers, Collections.singleton(user));
-    }
-
-    @Test
-    @WithMockUser(username = "testUser")
-    void shouldRespond400IfAddingNonExistentUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest(60);
-
-        mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
-                        .content(objectMapper.writeValueAsString(userRequest))
-                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(username = "testUser")
-    void shouldRespond404IfDeletingNonExistentUser() throws Exception {
-        mockMvc.perform(delete("/organizations/" + organization.getId() + "/users/60"))
-                .andExpect(status().isNotFound());
     }
 }

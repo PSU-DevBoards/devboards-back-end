@@ -18,7 +18,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public User getMe(Principal principal){
-        return userService.findByUsername(principal.getName());
+    public User getMe(Principal principal) {
+        return userService.getByUserName(principal.getName());
     }
 }

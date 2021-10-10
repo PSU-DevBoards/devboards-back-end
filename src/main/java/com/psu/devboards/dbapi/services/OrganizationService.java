@@ -1,6 +1,7 @@
 package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
+import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Singleton service for interacting with organizations. Performs all user authorization checks before performing
@@ -25,17 +26,17 @@ public class OrganizationService {
     }
 
     /**
-     * Finds an organization by it's id.
+     * Finds an organization by its id.
      *
-     * @param user The requesting user.
-     * @param id   The id of the organization to find.
+     * @param requestUser The requesting user.
+     * @param id          The id of the organization to find.
      * @return The found organization.
      */
-    public Organization findOrganizationById(User user, Integer id) {
+    public Organization findOrganizationById(User requestUser, Integer id) {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found."));
 
-        validateViewPermission(user, organization);
+        validateViewPermission(requestUser, organization);
 
         return organization;
     }
@@ -44,95 +45,71 @@ public class OrganizationService {
      * Creates a new organization and makes the requesting user an owner. Additionally, makes the requesting user
      * a member of the new organization.
      *
-     * @param user The requesting user.
-     * @param name The name of the new organization.
+     * @param requestUser The requesting user.
+     * @param name        The name of the new organization.
      * @return The created organization.
      */
-    public Organization createOrganization(User user, String name) {
-        Organization organization = new Organization(name, user, Collections.singleton(user));
+    public Organization createOrganization(User requestUser, String name) {
+        Organization organization = new Organization(name, requestUser);
+        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, requestUser))));
 
         return organizationRepository.save(organization);
     }
 
     /**
-     * Updates an organization by it's id.
+     * Updates an organization by its id.
      *
-     * @param user                The user making the request.
+     * @param requestUser         The user making the request.
      * @param id                  The id of the organization to update.
      * @param organizationRequest The attributes to update.
      * @return The updated organization.
      */
-    public Organization updateOrganizationById(User user, Integer id, OrganizationRequest organizationRequest) {
-        Organization organization = findOrganizationById(user, id);
-        validateUpdatePermission(user, organization);
+    public Organization updateOrganizationById(User requestUser, Integer id, OrganizationRequest organizationRequest) {
+        Organization organization = findOrganizationById(requestUser, id);
+        validateUpdatePermission(requestUser, organization);
 
         organization.setName(organizationRequest.getName());
         return organizationRepository.save(organization);
     }
 
     /**
-     * Deletes an organization by it's id.
+     * Updates an organization without checking if a user has permission to update it.
      *
-     * @param user The user making the request.
-     * @param id   The id of the organization to delete.
+     * @param organization The organization to update.
+     * @return The updated organization.
      */
-    public void deleteOrganizationById(User user, Integer id) {
-        Organization organization = findOrganizationById(user, id);
-        validateDeletePermission(user, organization);
+    public Organization updateOrganization(Organization organization) {
+        return organizationRepository.save(organization);
+    }
+
+    /**
+     * Deletes an organization by its id.
+     *
+     * @param requestUser The user making the request.
+     * @param id          The id of the organization to delete.
+     */
+    public void deleteOrganizationById(User requestUser, Integer id) {
+        Organization organization = findOrganizationById(requestUser, id);
+        validateDeletePermission(requestUser, organization);
 
         organizationRepository.delete(organization);
     }
 
     /**
-     * Gets a list of an organization's users by it's id.
+     * Checks to see if a user is in an organization.
      *
-     * @param user The user making the request.
-     * @param id   The id of the organization.
-     * @return The list of organization users.
+     * @param user         The user to check for.
+     * @param organization The organization to check in.
+     * @return If the user is in the organization or not.
      */
-    public Set<User> getOrganizationUsers(User user, Integer id) {
-        Organization organization = findOrganizationById(user, id);
-
-        return organization.getUsers();
-    }
-
-    /**
-     * Adds a user to an organization.
-     *
-     * @param user           The user making the request.
-     * @param organizationId The id of the organization to add the user to.
-     * @param newUser        The user to add to the organization.
-     */
-    public void addOrganizationUser(User user, Integer organizationId, User newUser) {
-        Organization organization = findOrganizationById(user, organizationId);
-        validateUpdatePermission(user, organization);
-
-        organization.getUsers().add(newUser);
-        organizationRepository.save(organization);
-    }
-
-    /**
-     * Removes a user from an organization.
-     *
-     * @param user           The user making the request.
-     * @param organizationId The id of the organization to remove the user from.
-     * @param userToRemove   The user to remove.
-     */
-    public void removeOrganizationUser(User user, Integer organizationId, User userToRemove) {
-        Organization organization = findOrganizationById(user, organizationId);
-        if (userToRemove.equals(organization.getOwner())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to remove the organization owner.");
-        }
-
-        validateUpdatePermission(user, organization);
-
-        organization.getUsers().remove(userToRemove);
-        organizationRepository.save(organization);
+    public boolean isUserInOrganization(User user, Organization organization) {
+        return organization.getUsers().stream()
+                .anyMatch(organizationUser -> organizationUser.getUser().equals(user));
     }
 
     /* Validates that the user entity has authorizations to view the organization entity */
     private void validateViewPermission(User user, Organization organization) {
-        if (!organization.getUsers().contains(user)) {
+        if (!isUserInOrganization(user, organization)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not allowed to view this organization.");
         }
     }
@@ -150,4 +127,5 @@ public class OrganizationService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not allowed to delete this organization.");
         }
     }
+
 }
