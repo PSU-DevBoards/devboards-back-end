@@ -7,6 +7,6 @@ public class NameUniqueViolationException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "An organization with this name already exists!";
+        return "An organization with this name already exists.";
     }
 }

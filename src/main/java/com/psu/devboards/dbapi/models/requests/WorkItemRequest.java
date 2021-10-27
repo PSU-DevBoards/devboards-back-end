@@ -11,14 +11,14 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 public class WorkItemRequest {
     @NotBlank(message="Work item must be of type: feature, story, or task.")
-    @NotNull(message="Work item type must be defined!")
+    @NotNull(message="Work item type must be defined.")
     @Pattern(regexp = "feature|story|task", flags = Pattern.Flag.CASE_INSENSITIVE, message="Work item must be of type: feature, story, or task.")
     private String type;
 
-    @NotBlank(message="Work item name must be specified!")
-    @NotNull(message="Work item name must be defined!")
+    @NotBlank(message="Work item name cannot be blank.")
+    @NotNull(message="Work item name must be defined.")
     private String name;
 
-    @NotNull(message="Work item priority must be defined!")
+    @NotNull(message="Work item priority must be defined.")
     private Integer priority;
 }
