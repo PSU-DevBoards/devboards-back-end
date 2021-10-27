@@ -6,20 +6,14 @@ import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.services.OrganizationService;
 import com.psu.devboards.dbapi.services.UserService;
 import com.psu.devboards.dbapi.utils.ApiErrorAttributes;
-import com.psu.devboards.dbapi.utils.NameUniqueViolationException;
-import org.springframework.http.HttpHeaders;
+import com.psu.devboards.dbapi.exceptions.NameUniqueViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("organizations")

@@ -1,4 +1,4 @@
-package com.psu.devboards.dbapi.utils;
+package com.psu.devboards.dbapi.exceptions;
 
 public class NameUniqueViolationException extends RuntimeException {
     public NameUniqueViolationException() {
