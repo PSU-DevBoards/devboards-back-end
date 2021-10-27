@@ -5,6 +5,8 @@ import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
+import com.psu.devboards.dbapi.utils.NameUniqueViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,10 @@ public class OrganizationService {
     public Organization createOrganization(User requestUser, String name) {
         Organization organization = new Organization(name, requestUser);
         organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, requestUser))));
+
+        if( organizationRepository.findByName(name).isPresent() ){
+            throw new NameUniqueViolationException();
+        }
 
         return organizationRepository.save(organization);
     }
