@@ -70,10 +70,15 @@ public class OrganizationService {
      * @return The updated organization.
      */
     public Organization updateOrganizationById(User requestUser, Integer id, OrganizationRequest organizationRequest) {
+        String newName = organizationRequest.getName();
         Organization organization = findOrganizationById(requestUser, id);
         validateUpdatePermission(requestUser, organization);
 
-        organization.setName(organizationRequest.getName());
+        if( organizationRepository.findByName(newName).isPresent() ){
+            throw new NameUniqueViolationException();
+        }
+
+        organization.setName(newName);
         return organizationRepository.save(organization);
     }
 

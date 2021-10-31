@@ -26,7 +26,7 @@ public class ApiErrorAttributes extends ResponseEntityExceptionHandler {
         List<FieldError> errList = ex.getBindingResult().getFieldErrors();
 
         /* Convert FieldErrors list to list of strings to return in body */
-        ArrayList<String> errors = new ArrayList<String>();
+        ArrayList<String> errors = new ArrayList<>();
         for( FieldError error : errList ){
             errors.add( error.getDefaultMessage() );
         }
