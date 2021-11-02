@@ -1,5 +1,7 @@
 package com.psu.devboards.dbapi.models.requests;
 
+import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,7 +15,7 @@ public class WorkItemRequest {
     @NotBlank(message="Work item must be of type: feature, story, or task.")
     @NotNull(message="Work item type must be defined.")
     @Pattern(regexp = "feature|story|task", flags = Pattern.Flag.CASE_INSENSITIVE, message="Work item must be of type: feature, story, or task.")
-    private String type;
+    private WorkItemType type;
 
     @NotBlank(message="Work item name cannot be blank.")
     @NotNull(message="Work item name must be defined.")

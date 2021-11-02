@@ -2,6 +2,7 @@ package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import com.psu.devboards.dbapi.repositories.WorkItemRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class WorkItemService {
      * @param priority    The assigned priority of the work item (lower = higher priority).
      * @return A list of work items.
      */
-    public WorkItem createWorkItem(User requestUser, String name, String type, Integer priority) {
+    public WorkItem createWorkItem(User requestUser, String name, WorkItemType type, Integer priority) {
         WorkItem item = new WorkItem(name, type, priority);
         return workItemRepository.save(item);
     }
