@@ -44,10 +44,10 @@ class OrganizationUserControllerTestIT {
     UserRepository userRepository;
 
     @Autowired
-    OrganizationRepository organizationRepository;
+    RoleRepository roleRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    OrganizationRepository organizationRepository;
 
     ObjectMapper objectMapper;
     User user;
@@ -68,11 +68,12 @@ class OrganizationUserControllerTestIT {
 
         organization = new Organization("testOrganization", user);
         organization = organizationRepository.save(organization);
-        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user))));
+
+        role = roleRepository.getByName("Scrum Master");
+        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user, role))));
         organization = organizationRepository.save(organization);
 
         user2 = userRepository.save(new User("testUser2"));
-        role = roleRepository.save(new Role("role"));
         role2 = roleRepository.save(new Role("role2"));
     }
 
@@ -82,7 +83,7 @@ class OrganizationUserControllerTestIT {
         MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":null}]",
+        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2}]",
                 response.getResponse().getContentAsString());
     }
 
@@ -98,15 +99,15 @@ class OrganizationUserControllerTestIT {
         MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"organization_id\":1,\"user_id\":2,\"role_id\":3},{\"organization_id\":1,\"user_id\":1," +
-                "\"role_id\":null}]", response.getResponse().getContentAsString());
+        assertEquals("[{\"organization_id\":1,\"user_id\":2,\"role_id\":2},{\"organization_id\":1,\"user_id\":1," +
+                "\"role_id\":2}]", response.getResponse().getContentAsString());
     }
 
     @Test
     @WithMockUser(username = "testUser")
     void shouldRemoveOrganizationUser() throws Exception {
         User userToRemove = userRepository.save(new User("userToRemove"));
-        OrganizationUser organizationUserToRemove = new OrganizationUser(organization, userToRemove);
+        OrganizationUser organizationUserToRemove = new OrganizationUser(organization, userToRemove, role);
         organization.getUsers().add(organizationUserToRemove);
         organizationRepository.save(organization);
 
@@ -115,7 +116,7 @@ class OrganizationUserControllerTestIT {
         MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":null}]",
+        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2}]",
                 response.getResponse().getContentAsString());
     }
 

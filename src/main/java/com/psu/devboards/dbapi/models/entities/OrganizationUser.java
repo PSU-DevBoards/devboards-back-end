@@ -44,7 +44,7 @@ public class OrganizationUser {
 
     @OneToOne
     @JsonProperty("role_id")
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Role role;

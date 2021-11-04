@@ -16,10 +16,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,6 +79,7 @@ class RoleControllerTestIT {
         MvcResult response = mockMvc.perform(get("/roles/" + role.getId() + "/permissions"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"id\":11,\"key\":\"testPermission\"}]", response.getResponse().getContentAsString());
+        assertEquals("[{\"id\":" + permission.getId() + ",\"key\":\"testPermission\"}]",
+                response.getResponse().getContentAsString());
     }
 }
