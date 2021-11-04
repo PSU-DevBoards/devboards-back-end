@@ -18,6 +18,7 @@ public class RoleService extends CrudService<Integer, Role, Object> {
 
     /**
      * Gets a role by its name.
+     *
      * @param name The name to get the role by.
      * @return The retrieved role.
      * @throws ResponseStatusException Throws not found if the role does not exist.
@@ -29,11 +30,11 @@ public class RoleService extends CrudService<Integer, Role, Object> {
 
     @Override
     protected Role updateEntityFromRequest(Object request, Role entity) {
-        return null;
+        throw new UnsupportedOperationException("Update entity not supported for Role.");
     }
 
     @Override
     protected Role createEntityFromRequest(Object request) {
-        return null;
+        throw new UnsupportedOperationException("Create entity not supported for Role.");
     }
 }

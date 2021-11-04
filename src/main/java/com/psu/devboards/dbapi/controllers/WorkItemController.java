@@ -41,19 +41,20 @@ public class WorkItemController {
 
     @GetMapping("/{workItemId}")
     @PreAuthorize("hasPermission(#workItemId, 'WorkItem', 'view')")
-    public WorkItem getWorkItem(@PathVariable Integer workItemId) {
+    public WorkItem getWorkItem(@PathVariable Integer workItemId, @PathVariable String orgId) {
         return workItemService.getById(workItemId);
     }
 
     @DeleteMapping("/{workItemId}")
     @PreAuthorize("hasPermission(#workItemId, 'WorkItem', 'delete')")
-    public void deleteWorkItem(@PathVariable Integer workItemId) {
+    public void deleteWorkItem(@PathVariable Integer workItemId, @PathVariable String orgId) {
         workItemService.deleteById(workItemId);
     }
 
     @PatchMapping("/{workItemId}")
     @PreAuthorize("hasPermission(#workItemId, 'WorkItem', 'edit')")
-    public void patchWorkItem(@PathVariable Integer workItemId, @Valid @RequestBody WorkItemRequest workItemRequest) {
+    public void patchWorkItem(@PathVariable Integer workItemId, @Valid @RequestBody WorkItemRequest workItemRequest,
+                              @PathVariable String orgId) {
         workItemService.updateById(workItemId, workItemRequest);
     }
 }

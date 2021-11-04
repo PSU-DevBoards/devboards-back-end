@@ -99,7 +99,7 @@ class OrganizationUserControllerTestIT {
         MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
                 .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"organization_id\":1,\"user_id\":2,\"role_id\":2},{\"organization_id\":1,\"user_id\":1," +
+        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2},{\"organization_id\":1,\"user_id\":2," +
                 "\"role_id\":2}]", response.getResponse().getContentAsString());
     }
 

@@ -23,7 +23,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -32,8 +31,9 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -105,12 +105,9 @@ class WorkItemControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldGetAWorkItemById() throws Exception {
-        MvcResult result =
-                mockMvc.perform(get("/organizations/" + organization.getId() + "/work-items/" + workItem.getId()))
-                .andExpect(status().isOk()).andReturn();
-
-        WorkItem retrievedItem = objectMapper.readValue(result.getResponse().getContentAsString(), WorkItem.class);
-        assertEquals(workItem, retrievedItem);
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/work-items/" + workItem.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(workItem)));
     }
 
     @Test
@@ -125,6 +122,7 @@ class WorkItemControllerTestIT {
                 .build();
 
         WorkItem expectedItem = WorkItem.builder()
+                .id(2)
                 .description(workItemRequest.getDescription())
                 .name(workItemRequest.getName())
                 .priority(workItemRequest.getPriority())
@@ -132,19 +130,15 @@ class WorkItemControllerTestIT {
                 .organization(organization)
                 .build();
 
-        MvcResult response = mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
+        mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(workItemRequest))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedItem)));
 
-        WorkItem createdItem = objectMapper.readValue(response.getResponse().getContentAsString(), WorkItem.class);
-        expectedItem.setId(createdItem.getId());
 
-        assertEquals(expectedItem, createdItem);
-
-        WorkItem persistentItem = workItemRepository.getById(createdItem.getId());
+        WorkItem persistentItem = workItemRepository.getById(expectedItem.getId());
         assertEquals(expectedItem, persistentItem);
     }
 

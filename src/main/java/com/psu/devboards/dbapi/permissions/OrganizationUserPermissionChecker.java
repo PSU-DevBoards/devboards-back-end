@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.security.Principal;
 
 @Component
-public class OrganizationUserPermissionChecker extends PermissionChecker<OrganizationUser> {
+public class OrganizationUserPermissionChecker extends PermissionChecker {
 
     public OrganizationUserPermissionChecker() {
         this.domainClassName = OrganizationUser.class.getSimpleName();

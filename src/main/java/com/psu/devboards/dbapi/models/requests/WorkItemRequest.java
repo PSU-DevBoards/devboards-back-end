@@ -1,7 +1,6 @@
 package com.psu.devboards.dbapi.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.psu.devboards.dbapi.models.WorkItemType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

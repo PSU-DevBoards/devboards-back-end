@@ -6,7 +6,6 @@ import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.repositories.WorkItemRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 /**

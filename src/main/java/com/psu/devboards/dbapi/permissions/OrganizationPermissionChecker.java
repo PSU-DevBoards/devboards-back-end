@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 @Component
-public class OrganizationPermissionChecker extends PermissionChecker<Organization> {
+public class OrganizationPermissionChecker extends PermissionChecker {
 
     public OrganizationPermissionChecker() {
         this.domainClassName = Organization.class.getSimpleName();
