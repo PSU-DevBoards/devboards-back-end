@@ -1,1 +1,46 @@
-INSERT INTO work_item (name) VALUES ('test');
+INSERT INTO role (name)
+VALUES ('Developer'),
+       ('Scrum Master');
+
+INSERT INTO permission(key)
+VALUES ('WorkItem:create'),
+       ('WorkItem:edit'),
+       ('WorkItem:delete'),
+       ('WorkItem:view'),
+       ('WorkItem:list'),
+       ('Organization:edit'),
+       ('Organization:delete'),
+       ('Organization:view'),
+       ('OrganizationUser:edit'),
+       ('OrganizationUser:delete'),
+       ('OrganizationUser:view'),
+       ('OrganizationUser:list'),
+       ('OrganizationUser:create');
+
+INSERT INTO role_permissions (role_id, permissions_id)
+VALUES (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'Organization:view'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'Organization:edit'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'Organization:delete'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'OrganizationUser:edit'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'OrganizationUser:delete'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'OrganizationUser:view'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'OrganizationUser:list'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'OrganizationUser:create'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'WorkItem:edit'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'WorkItem:delete'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'WorkItem:view'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'WorkItem:list'),
+       (SELECT id from role WHERE name = 'Scrum Master',
+           SELECT id from permission WHERE key = 'WorkItem:create');

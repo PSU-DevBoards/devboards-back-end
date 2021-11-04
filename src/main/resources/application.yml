@@ -4,6 +4,11 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dev-kdnjsccp.us.auth0.com/
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
   sendgrid:
     api-key: ${SENDGRID_API_KEY}
 auth0:
