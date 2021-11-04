@@ -1,5 +1,6 @@
 package com.psu.devboards.dbapi.models.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,4 +18,12 @@ public class OrganizationUserRequest {
 
     @JsonProperty("role_id")
     private Integer roleId;
+
+    @JsonIgnore
+    private Integer organizationId;
+
+    public OrganizationUserRequest(Integer userId, Integer roleId) {
+        this.userId = userId;
+        this.roleId = roleId;
+    }
 }

@@ -1,14 +1,10 @@
 package com.psu.devboards.dbapi.controllers;
 
-import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
-import com.psu.devboards.dbapi.models.entities.Role;
-import com.psu.devboards.dbapi.models.entities.User;
+import com.psu.devboards.dbapi.models.entities.OrganizationUserKey;
 import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
-import com.psu.devboards.dbapi.services.OrganizationService;
 import com.psu.devboards.dbapi.services.OrganizationUserService;
-import com.psu.devboards.dbapi.services.RoleService;
-import com.psu.devboards.dbapi.services.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,64 +15,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.Set;
 
 @RestController
-@RequestMapping("organizations/{orgId}")
+@RequestMapping("organizations/{orgId}/users")
 public class OrganizationUserController {
 
-    private final UserService userService;
     private final OrganizationUserService organizationUserService;
-    private final OrganizationService organizationService;
-    private final RoleService roleService;
 
-    public OrganizationUserController(UserService userService, OrganizationUserService organizationUserService,
-                                      OrganizationService organizationService, RoleService roleService) {
-        this.userService = userService;
+    public OrganizationUserController(OrganizationUserService organizationUserService) {
         this.organizationUserService = organizationUserService;
-        this.organizationService = organizationService;
-        this.roleService = roleService;
     }
 
-    @GetMapping("/users")
-    public Set<OrganizationUser> getOrganizationUsers(@PathVariable Integer orgId, Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-        Organization organization = organizationService.findOrganizationById(user, orgId);
-
-        return organizationUserService.getOrganizationUsers(user, organization);
+    @GetMapping()
+    @PreAuthorize("@organizationUserPermissionChecker.hasListPermission(#orgId)")
+    public Set<OrganizationUser> getOrganizationUsers(@PathVariable Integer orgId) {
+        return organizationUserService.getOrganizationUsers(orgId);
     }
 
-    @PostMapping("/users")
+    @PostMapping()
+    @PreAuthorize("@organizationUserPermissionChecker.hasCreatePermission(#orgId)")
     public void postOrganizationUser(@PathVariable Integer orgId,
-                                     @Valid @RequestBody OrganizationUserRequest organizationUserRequest,
-                                     Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-        User newUser = userService.findById(organizationUserRequest.getUserId());
-        Organization organization = organizationService.findOrganizationById(user, orgId);
-        Role role = roleService.findRoleById(organizationUserRequest.getRoleId());
-
-        organizationUserService.addOrganizationUser(user, organization, newUser, role);
+                                     @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
+        organizationUserRequest.setOrganizationId(orgId);
+        organizationUserService.create(organizationUserRequest);
     }
 
-    @DeleteMapping("/users/{userId}")
-    public void deleteOrganizationUser(@PathVariable Integer orgId, @PathVariable Integer userId, Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-        User userToRemove = userService.findById(userId);
-        Organization organization = organizationService.findOrganizationById(user, orgId);
-
-        organizationUserService.removeOrganizationUser(user, organization, userToRemove);
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("@organizationUserPermissionChecker.hasPermission(#orgId, #userId, 'delete')")
+    public void deleteOrganizationUser(@PathVariable Integer orgId, @PathVariable Integer userId) {
+        organizationUserService.deleteById(new OrganizationUserKey(orgId, userId));
     }
 
-    @PatchMapping("/users/{userId}")
-    public void patchOrganizationUser(@PathVariable Integer orgId,
-                                      @Valid @RequestBody OrganizationUserRequest organizationUserRequest,
-                                      @PathVariable Integer userId, Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-        Organization organization = organizationService.findOrganizationById(user, orgId);
-        User userToUpdate = userService.findById(userId);
-        Role role = roleService.findRoleById(organizationUserRequest.getRoleId());
-
-        organizationUserService.updateOrganizationUser(user, organization, userToUpdate, role);
+    @PatchMapping("/{userId}")
+    @PreAuthorize("@organizationUserPermissionChecker.hasPermission(#orgId, #userId, 'edit')")
+    public void patchOrganizationUser(@PathVariable Integer orgId, @PathVariable Integer userId,
+                                      @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
+        organizationUserService.updateById(new OrganizationUserKey(orgId, userId), organizationUserRequest);
     }
 }

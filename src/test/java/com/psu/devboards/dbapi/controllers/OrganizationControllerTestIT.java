@@ -3,9 +3,11 @@ package com.psu.devboards.dbapi.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
+import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
+import com.psu.devboards.dbapi.repositories.RoleRepository;
 import com.psu.devboards.dbapi.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,9 @@ class OrganizationControllerTestIT {
     @Autowired
     OrganizationRepository organizationRepository;
 
+    @Autowired
+    RoleRepository roleRepository;
+
     ObjectMapper objectMapper;
     User user;
     User user2;
@@ -61,7 +66,9 @@ class OrganizationControllerTestIT {
 
         organization = new Organization("testOrganization", user);
         organization = organizationRepository.save(organization);
-        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user))));
+
+        Role role = roleRepository.getByName("Scrum Master");
+        organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user, role))));
         organization = organizationRepository.save(organization);
 
         user2 = userRepository.save(new User("testUser2"));

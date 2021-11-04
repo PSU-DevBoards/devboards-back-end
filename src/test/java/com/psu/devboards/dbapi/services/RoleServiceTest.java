@@ -1,19 +1,17 @@
 package com.psu.devboards.dbapi.services;
 
+import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.repositories.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,12 +24,23 @@ class RoleServiceTest {
     RoleService roleService;
 
     @Test
-    void shouldThrow404WhenRoleNotFound() {
-        when(roleRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void getByNameThrowsResponseStatusExceptionIfNotFound() {
+        when(roleRepository.findByName("test")).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> roleService.findRoleById(1));
+        assertThrows(ResponseStatusException.class, () -> roleService.getByName("test"));
+    }
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    @Test
+    void updateEntityFromRequestThrowsUnsupported() {
+        when(roleRepository.findById(1)).thenReturn(Optional.of(new Role()));
+
+        Object request = new Object();
+        assertThrows(UnsupportedOperationException.class, () -> roleService.updateById(1, request));
+    }
+
+    @Test
+    void createEntityFromRequestThrowsUnsupported() {
+        Object request = new Object();
+        assertThrows(UnsupportedOperationException.class, () -> roleService.create(request));
     }
 }

@@ -44,6 +44,12 @@ public class Organization {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrganizationUser> users;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
+    private Set<WorkItem> workItems;
+
     public Organization(Integer id, String name, User owner) {
         this.id = id;
         this.name = name;
