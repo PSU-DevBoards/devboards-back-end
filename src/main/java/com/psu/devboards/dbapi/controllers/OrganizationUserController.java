@@ -4,6 +4,8 @@ import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.OrganizationUserKey;
 import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
 import com.psu.devboards.dbapi.services.OrganizationUserService;
+import com.psu.devboards.dbapi.services.SendGridService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("organizations/{orgId}/users")
 public class OrganizationUserController {
 
     private final OrganizationUserService organizationUserService;
+    private final SendGridService sendGridService;
 
-    public OrganizationUserController(OrganizationUserService organizationUserService) {
+    public OrganizationUserController(OrganizationUserService organizationUserService,
+                                      SendGridService sendGridService) {
         this.organizationUserService = organizationUserService;
+        this.sendGridService = sendGridService;
     }
 
     @GetMapping()
@@ -35,10 +41,16 @@ public class OrganizationUserController {
 
     @PostMapping()
     @PreAuthorize("@organizationUserPermissionChecker.hasCreatePermission(#orgId)")
-    public void postOrganizationUser(@PathVariable Integer orgId,
-                                     @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
+    public OrganizationUser postOrganizationUser(@PathVariable Integer orgId,
+                                                 @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
         organizationUserRequest.setOrganizationId(orgId);
-        organizationUserService.create(organizationUserRequest);
+
+        // Create user and send welcome email
+        OrganizationUser organizationUser = organizationUserService.create(organizationUserRequest);
+        sendGridService.sendOrgInviteEmail(organizationUser.getUser().getEmail(),
+                organizationUser.getOrganization().getName(), organizationUser.getOrganization().getId().toString());
+
+        return organizationUser;
     }
 
     @DeleteMapping("/{userId}")

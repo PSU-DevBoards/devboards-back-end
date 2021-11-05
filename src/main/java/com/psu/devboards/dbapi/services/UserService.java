@@ -2,9 +2,9 @@ package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.repositories.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -19,9 +19,8 @@ public class UserService {
         return userRepository.getByUsername(username);
     }
 
-    public User findById(Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist."));
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User saveUser(User user) {

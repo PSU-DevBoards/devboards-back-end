@@ -73,7 +73,7 @@ class OrganizationUserControllerTestIT {
         organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user, role))));
         organization = organizationRepository.save(organization);
 
-        user2 = userRepository.save(new User("testUser2"));
+        user2 = userRepository.save(new User("testUser2", "user2@email.com"));
         role2 = roleRepository.save(new Role("role2"));
     }
 
@@ -90,7 +90,7 @@ class OrganizationUserControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldAddOrganizationUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest(user2.getId(), role.getId());
+        OrganizationUserRequest userRequest = new OrganizationUserRequest(user2.getEmail(), role.getId());
 
         mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
                         .content(objectMapper.writeValueAsString(userRequest))
@@ -122,13 +122,13 @@ class OrganizationUserControllerTestIT {
 
     @Test
     @WithMockUser(username = "testUser")
-    void shouldRespond404IfAddingNonExistentUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest(60, 1);
+    void shouldRespond200WhenAddingNonExistentUser() throws Exception {
+        OrganizationUserRequest userRequest = new OrganizationUserRequest("notexist@email.com", 1);
 
         mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
                         .content(objectMapper.writeValueAsString(userRequest))
                         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

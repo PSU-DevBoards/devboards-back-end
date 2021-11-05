@@ -50,7 +50,13 @@ public class OrganizationUserService extends CrudService<OrganizationUserKey, Or
     @Override
     protected OrganizationUser createEntityFromRequest(OrganizationUserRequest request) {
         Role role = roleService.getById(request.getRoleId());
-        User user = userService.findById(request.getUserId());
+        // Get a user by their email or create a user with just with email for an invitation type situation.
+        User user = userService.findByEmail(request.getEmail()).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(request.getEmail());
+            return userService.saveUser(newUser);
+        });
+
         Organization organization = organizationService.getById(request.getOrganizationId());
 
         return new OrganizationUser(organization, user, role);
