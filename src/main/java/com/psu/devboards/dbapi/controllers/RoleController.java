@@ -23,16 +23,16 @@ public class RoleController {
 
     @GetMapping
     public List<Role> getRoles() {
-        return roleService.listRoles();
+        return roleService.list();
     }
 
     @GetMapping("/{roleId}")
     public Role getRole(@PathVariable Integer roleId) {
-        return roleService.findRoleById(roleId);
+        return roleService.getById(roleId);
     }
 
     @GetMapping("/{roleId}/permissions")
     public Set<Permission> getRolePermissions(@PathVariable Integer roleId) {
-        return roleService.findRoleById(roleId).getPermissions();
+        return roleService.getById(roleId).getPermissions();
     }
 }

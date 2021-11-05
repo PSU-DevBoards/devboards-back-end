@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ public class Role {
     private String name;
 
     @JsonIgnore
-    @ManyToMany(targetEntity = Permission.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Permission.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Permission> permissions;
 
     public Role(String name) {

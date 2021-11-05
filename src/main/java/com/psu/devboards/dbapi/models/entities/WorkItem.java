@@ -1,13 +1,27 @@
 package com.psu.devboards.dbapi.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.psu.devboards.dbapi.models.WorkItemType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "work_item")
@@ -29,10 +43,10 @@ public class WorkItem {
     @Column
     private String description;
 
-    public WorkItem(String name, WorkItemType type, Integer priority) {
-        this.name = name;
-        this.type = type;
-        this.priority = priority;
-        this.description = "";
-    }
+    @ManyToOne
+    @JsonProperty("organization_id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @JoinColumn(name = "organization_id", nullable = false)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    private Organization organization;
 }

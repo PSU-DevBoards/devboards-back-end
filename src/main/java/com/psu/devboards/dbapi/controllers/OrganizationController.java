@@ -1,71 +1,51 @@
 package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
-import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.services.OrganizationService;
-import com.psu.devboards.dbapi.services.UserService;
-import com.psu.devboards.dbapi.utils.ApiErrorAttributes;
-import com.psu.devboards.dbapi.exceptions.NameUniqueViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("organizations")
-@Validated
 public class OrganizationController {
 
-    private final UserService userService;
     private final OrganizationService organizationService;
 
-    public OrganizationController(UserService userService, OrganizationService organizationService) {
-        this.userService = userService;
+    public OrganizationController(OrganizationService organizationService) {
         this.organizationService = organizationService;
     }
 
     @GetMapping("/{id}")
-    public Organization getOrganization(@PathVariable Integer id, Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-
-        return organizationService.findOrganizationById(user, id);
+    @PreAuthorize("hasPermission(#id, 'Organization', 'view')")
+    public Organization getOrganization(@PathVariable Integer id) {
+        return organizationService.getById(id);
     }
 
     @PostMapping
-    public Organization postOrganization(@Valid @RequestBody OrganizationRequest organizationRequest,
-                                         Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-
-        return organizationService.createOrganization(user, organizationRequest.getName());
+    public Organization postOrganization(@Valid @RequestBody OrganizationRequest organizationRequest) {
+        return organizationService.create(organizationRequest);
     }
 
     @PatchMapping("/{id}")
-    public Organization patchOrganization(@PathVariable Integer id,
-                                          @Valid @RequestBody OrganizationRequest organizationRequest,
-                                          Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-
-        return organizationService.updateOrganizationById(user, id, organizationRequest);
+    @PreAuthorize("hasPermission(#id, 'Organization', 'edit')")
+    public void patchOrganization(@PathVariable Integer id,
+                                  @Valid @RequestBody OrganizationRequest organizationRequest) {
+        organizationService.updateById(id, organizationRequest);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrganization(@PathVariable Integer id, Principal principal) {
-        User user = userService.getByUserName(principal.getName());
-
-        organizationService.deleteOrganizationById(user, id);
-    }
-
-    @ExceptionHandler(NameUniqueViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ResponseEntity<Object> handleNameUniqueViolation(NameUniqueViolationException ex)
-    {
-        ApiErrorAttributes err = new ApiErrorAttributes();
-        return err.generateErrorResponse(Arrays.asList(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    @PreAuthorize("hasPermission(#id, 'Organization', 'delete')")
+    public void deleteOrganization(@PathVariable Integer id) {
+        organizationService.deleteById(id);
     }
 }

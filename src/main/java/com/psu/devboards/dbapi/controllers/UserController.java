@@ -1,7 +1,7 @@
 package com.psu.devboards.dbapi.controllers;
 
-import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.entities.Organization;
+import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.services.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/me/organizations")
-    public Set<Organization> getCurrentUserOrganizations(Principal principal){
+    public Set<Organization> getCurrentUserOrganizations(Principal principal) {
         User user = userService.getByUserName(principal.getName());
         return user.getOwnedOrganizations();
     }

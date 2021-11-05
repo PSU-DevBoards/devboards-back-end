@@ -1,42 +1,50 @@
 package com.psu.devboards.dbapi.services;
 
-import com.psu.devboards.dbapi.models.entities.User;
+import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
-import com.psu.devboards.dbapi.models.entities.WorkItemType;
+import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.repositories.WorkItemRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
+/**
+ * Singleton service for interacting with work items.
+ */
 @Service
-public class WorkItemService {
+public class WorkItemService extends CrudService<Integer, WorkItem, WorkItemRequest> {
 
-    private final WorkItemRepository workItemRepository;
+    private final OrganizationService organizationService;
 
-    public WorkItemService(WorkItemRepository workItemRepository) {
-        this.workItemRepository = workItemRepository;
+    public WorkItemService(WorkItemRepository workItemRepository, OrganizationService organizationService) {
+        super(workItemRepository);
+        this.organizationService = organizationService;
     }
 
-    /**
-     * Gets all existing work items (features, stories, and tasks).
-     *
-     * @return A list of work items.
-     */
-    public List<WorkItem> getAllWorkItems() {
-        return workItemRepository.findAll();
+    public Set<WorkItem> getAllWorkItems(Integer orgId) {
+        return organizationService.getById(orgId).getWorkItems();
     }
 
-    /**
-     * Adds a work item with the given parameters.
-     *
-     * @param requestUser The user that created the work item.
-     * @param name        The name of the work item.
-     * @param type        The type of work item (enforced: feature, story, task).
-     * @param priority    The assigned priority of the work item (lower = higher priority).
-     * @return A list of work items.
-     */
-    public WorkItem createWorkItem(User requestUser, String name, WorkItemType type, Integer priority) {
-        WorkItem item = new WorkItem(name, type, priority);
-        return workItemRepository.save(item);
+    @Override
+    protected WorkItem updateEntityFromRequest(WorkItemRequest request, WorkItem entity) {
+        entity.setName(request.getName());
+        entity.setType(request.getType());
+        entity.setDescription(request.getDescription());
+        entity.setPriority(request.getPriority());
+
+        return entity;
+    }
+
+    @Override
+    protected WorkItem createEntityFromRequest(WorkItemRequest request) {
+        Organization organization = organizationService.getById(request.getOrganizationId());
+
+        return WorkItem.builder()
+                .organization(organization)
+                .name(request.getName())
+                .type(request.getType())
+                .description(request.getDescription())
+                .priority(request.getPriority())
+                .build();
     }
 }
