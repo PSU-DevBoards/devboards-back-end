@@ -1,5 +1,6 @@
 package com.psu.devboards.dbapi.services;
 
+import com.psu.devboards.dbapi.exceptions.UniqueViolationException;
 import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.Role;
@@ -31,13 +32,18 @@ public class OrganizationService extends CrudService<Integer, Organization, Orga
 
     @Override
     protected Organization updateEntityFromRequest(OrganizationRequest request, Organization entity) {
-        entity.setName(request.getName());
+        if (!entity.getName().equals(request.getName())) {
+            validateUniqueOrganization(request);
+            entity.setName(request.getName());
+        }
 
         return entity;
     }
 
     @Override
     protected Organization createEntityFromRequest(OrganizationRequest request) {
+        validateUniqueOrganization(request);
+
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByUserName(principal.getName());
 
@@ -47,5 +53,12 @@ public class OrganizationService extends CrudService<Integer, Organization, Orga
         organization.setUsers(new HashSet<>(Collections.singletonList(new OrganizationUser(organization, user, role))));
 
         return organization;
+    }
+
+    private void validateUniqueOrganization(OrganizationRequest request) throws UniqueViolationException {
+        ((OrganizationRepository) repository).findByName(request.getName())
+                .ifPresent(organization -> {
+                    throw new UniqueViolationException("Organization", "name");
+                });
     }
 }

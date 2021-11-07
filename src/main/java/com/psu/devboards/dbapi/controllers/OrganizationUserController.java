@@ -5,6 +5,7 @@ import com.psu.devboards.dbapi.models.entities.OrganizationUserKey;
 import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
 import com.psu.devboards.dbapi.services.OrganizationUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Set;
 
+@Validated
 @RestController
 @RequestMapping("organizations/{orgId}/users")
 public class OrganizationUserController {
@@ -50,7 +52,7 @@ public class OrganizationUserController {
     @PatchMapping("/{userId}")
     @PreAuthorize("@organizationUserPermissionChecker.hasPermission(#orgId, #userId, 'edit')")
     public void patchOrganizationUser(@PathVariable Integer orgId, @PathVariable Integer userId,
-                                      @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
+                                      @RequestBody OrganizationUserRequest organizationUserRequest) {
         organizationUserService.updateById(new OrganizationUserKey(orgId, userId), organizationUserRequest);
     }
 }

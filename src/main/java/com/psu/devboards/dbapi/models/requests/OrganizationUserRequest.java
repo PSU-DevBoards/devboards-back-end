@@ -7,15 +7,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationUserRequest {
 
+    @NotNull
     @JsonProperty("user_id")
     private Integer userId;
 
+    @NotNull
     @JsonProperty("role_id")
     private Integer roleId;
 
