@@ -40,7 +40,10 @@ public class Auth0Service {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public Auth0User findUserById(String userId) throws NullPointerException {
+    public Auth0User findUserById(String userId) throws NullPointerException, IllegalArgumentException {
+        if (!userId.matches(("^[-a-z0-9|]+$")))
+            throw new IllegalArgumentException("User ID must match the pattern ^[-a-z0-9|]+$");
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
 

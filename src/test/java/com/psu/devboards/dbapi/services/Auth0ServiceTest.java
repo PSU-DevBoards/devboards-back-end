@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -48,7 +49,7 @@ class Auth0ServiceTest {
     }
 
     @Test
-    void findUserById() {
+    void findUserByIdCallsManagementEndpointWithToken() {
         ResponseEntity<TokenResponse> response =
                 new ResponseEntity<>(TokenResponse.builder().accessToken("access").build(), HttpStatus.OK);
         when(restTemplate.exchange(eq("authentication/oauth/token"), eq(HttpMethod.POST), any(),
@@ -66,5 +67,10 @@ class Auth0ServiceTest {
 
         verify(restTemplate, times(1))
                 .exchange("management/users/test", HttpMethod.GET, requestEntity, Auth0User.class);
+    }
+
+    @Test
+    void findUserByIdThrowsIfBadIdIsPassed() {
+        assertThrows(IllegalArgumentException.class, () -> auth0Service.findUserById("user@SOME"));
     }
 }
