@@ -4,6 +4,7 @@ import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
 import com.psu.devboards.dbapi.services.OrganizationService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+@Validated
 @RestController
 @RequestMapping("organizations")
 public class OrganizationController {

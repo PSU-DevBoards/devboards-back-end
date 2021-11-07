@@ -1,12 +1,12 @@
 package com.psu.devboards.dbapi.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.psu.devboards.dbapi.models.WorkItemType;
 import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
 import com.psu.devboards.dbapi.repositories.RoleRepository;
@@ -140,6 +140,23 @@ class WorkItemControllerTestIT {
 
         WorkItem persistentItem = workItemRepository.getById(expectedItem.getId());
         assertEquals(expectedItem, persistentItem);
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void postShouldReturnBadRequestIfNameIsBlank() throws Exception {
+        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+                .description("Created")
+                .name("")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .build();
+
+        mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(workItemRequest))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

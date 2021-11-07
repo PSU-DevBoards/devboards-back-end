@@ -143,8 +143,10 @@ class OrganizationUserControllerTestIT {
     void shouldUpdateOrganizationUser() throws Exception {
         organization.getUsers().add(new OrganizationUser(organization, user2, role));
         organizationRepository.save(organization);
-        OrganizationUserRequest organizationUserRequest =
-                OrganizationUserRequest.builder().roleId(role2.getId()).build();
+
+        OrganizationUserRequest organizationUserRequest = OrganizationUserRequest.builder()
+                .roleId(role2.getId())
+                .build();
 
         mockMvc.perform(patch("/organizations/" + organization.getId() + "/users/" + user2.getId())
                         .content(objectMapper.writeValueAsString(organizationUserRequest))

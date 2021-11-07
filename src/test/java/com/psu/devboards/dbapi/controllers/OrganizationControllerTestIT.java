@@ -91,6 +91,17 @@ class OrganizationControllerTestIT {
 
     @Test
     @WithMockUser(username = "testUser")
+    void shouldReturnConflictIfOrganizationWithNameExists() throws Exception {
+        OrganizationRequest organizationRequest = new OrganizationRequest("testOrganization");
+
+        mockMvc.perform(post("/organizations")
+                        .content(objectMapper.writeValueAsString(organizationRequest))
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
     void shouldUpdateOrganization() throws Exception {
         OrganizationRequest organizationRequest = new OrganizationRequest("updatedOrganization");
 
@@ -105,6 +116,29 @@ class OrganizationControllerTestIT {
                 .readValue(response.getResponse().getContentAsString(), Organization.class);
 
         assertEquals("updatedOrganization", updatedOrganization.getName());
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void shouldReturnConflictIfUpdatingToExitingOrganizationName() throws Exception {
+        organizationRepository.save(new Organization("updatedOrganization", user));
+        OrganizationRequest organizationRequest = new OrganizationRequest("updatedOrganization");
+
+        mockMvc.perform(patch("/organizations/" + organization.getId())
+                        .content(objectMapper.writeValueAsString(organizationRequest))
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void shouldReturnOkIfUpdatingToSameNameOrganizationHad() throws Exception {
+        OrganizationRequest organizationRequest = new OrganizationRequest("testOrganization");
+
+        mockMvc.perform(patch("/organizations/" + organization.getId())
+                        .content(objectMapper.writeValueAsString(organizationRequest))
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
