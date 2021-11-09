@@ -10,16 +10,16 @@ spring:
         hbm2ddl:
           import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
   sendgrid:
-    api-key: ${SENDGRID_API_KEY}
+    api-key: ${SENDGRID_API_KEY:test}
 auth0:
   domain: ${AUTH0_DOMAIN:dev-kdnjsccp.us.auth0.com}
   producer:
     audience: ${AUTH0_PRODUCER_AUDIENCE:https://devboards/api}
   management:
     client-id: ${AUTH0_MANAGEMENT_CLIENT_ID:FRen3dru4IpWkXERvDLTJQjItncunWtU}
-    client-secret: ${AUTH0_MANAGEMENT_CLIENT_SECRET}
+    client-secret: ${AUTH0_MANAGEMENT_CLIENT_SECRET:test}
     audience: ${AUTH0_MANAGEMENT_AUDIENCE:https://dev-kdnjsccp.us.auth0.com/api/v2/}
 email:
-  from: ${EMAIL_FROM}
+  from: ${EMAIL_FROM:test}
   template-ids:
     org-invite: ${EMAIL_ORG_INVITE_TEMPLATE_ID:d-5fb97c2ac73b4cb4a074790da72eb8fb}

@@ -1,6 +1,7 @@
 package com.psu.devboards.dbapi.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +14,11 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganizationUserRequest {
 
     @NotNull
-    @JsonProperty("user_id")
-    private Integer userId;
+    private String email;
 
     @NotNull
     @JsonProperty("role_id")
@@ -26,8 +27,8 @@ public class OrganizationUserRequest {
     @JsonIgnore
     private Integer organizationId;
 
-    public OrganizationUserRequest(Integer userId, Integer roleId) {
-        this.userId = userId;
+    public OrganizationUserRequest(String email, Integer roleId) {
+        this.email = email;
         this.roleId = roleId;
     }
 }

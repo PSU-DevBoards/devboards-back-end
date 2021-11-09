@@ -27,8 +27,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String username;
+
+    @Column(unique = true)
+    private String email;
 
     @JsonIgnore
     @ToString.Exclude
@@ -44,5 +47,10 @@ public class User {
 
     public User(String username) {
         this.username = username;
+    }
+
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
     }
 }
