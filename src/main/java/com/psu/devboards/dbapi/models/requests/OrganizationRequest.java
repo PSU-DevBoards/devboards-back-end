@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class OrganizationRequest {
 
-    @NotBlank(message="Organization name cannot be blank.")
-    @NotNull(message="Organization name must be defined.")
+    @NotBlank(message = "Organization name cannot be blank.")
+    @NotNull(message = "Organization name must be defined.")
     private String name;
 }
