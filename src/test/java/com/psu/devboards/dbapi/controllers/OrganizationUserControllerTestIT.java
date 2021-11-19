@@ -20,16 +20,16 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -80,11 +80,9 @@ class OrganizationUserControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldGetOrganizationUsers() throws Exception {
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
-
-        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2}]",
-                response.getResponse().getContentAsString());
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(new OrganizationUser(organization, user, role)))));
     }
 
     @Test
@@ -96,11 +94,11 @@ class OrganizationUserControllerTestIT {
                         .content(objectMapper.writeValueAsString(userRequest))
                         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
-
-        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2},{\"organization_id\":1,\"user_id\":2," +
-                "\"role_id\":2}]", response.getResponse().getContentAsString());
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(
+                        new OrganizationUser(organization, user, role),
+                        new OrganizationUser(organization, user2, role)))));
     }
 
     @Test
@@ -113,11 +111,10 @@ class OrganizationUserControllerTestIT {
 
         mockMvc.perform(delete("/organizations/" + organization.getId() + "/users/" + userToRemove.getId()))
                 .andExpect(status().isOk());
-        MvcResult response = mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
-                .andExpect(status().isOk()).andReturn();
 
-        assertEquals("[{\"organization_id\":1,\"user_id\":1,\"role_id\":2}]",
-                response.getResponse().getContentAsString());
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(new OrganizationUser(organization, user, role)))));
     }
 
     @Test

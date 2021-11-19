@@ -21,7 +21,7 @@ public class OrganizationUserRequest {
     private String email;
 
     @NotNull
-    @JsonProperty("role_id")
+    @JsonProperty("roleId")
     private Integer roleId;
 
     @JsonIgnore

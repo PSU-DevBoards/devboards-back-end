@@ -6,6 +6,7 @@ import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
 import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
@@ -84,16 +85,64 @@ class WorkItemControllerTestIT {
                 .name("Test")
                 .priority(1)
                 .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.BACKLOG)
                 .organization(organization)
                 .build();
         workItem = workItemRepository.save(workItem);
+
+        Organization organization2 = organizationRepository.save(new Organization("testOrganization2", user));
+        WorkItem workItem2 = WorkItem.builder()
+                .description("Test")
+                .name("Test")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.BACKLOG)
+                .organization(organization2)
+                .build();
+        workItemRepository.save(workItem2);
     }
 
     @Test
     @WithMockUser(username = "testUser")
-    void shouldListWorkItems() throws Exception {
+    void shouldListWorkItemsByOrganization() throws Exception {
         mockMvc.perform(get("/organizations/" + organization.getId() + "/work-items"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(workItem))));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void shouldFilterWorkItemsByStatus() throws Exception {
+        WorkItem expected = workItemRepository.save(WorkItem.builder()
+                .description("Test")
+                .name("Test")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.DONE)
+                .organization(organization)
+                .build());
+
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/work-items?status=DONE"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(expected))));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void shouldFilterWorkItemsByParentId() throws Exception {
+        WorkItem expected = workItemRepository.save(WorkItem.builder()
+                .description("Test")
+                .name("Test")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.DONE)
+                .organization(organization)
+                .parent(workItem)
+                .build());
+
+        mockMvc.perform(get("/organizations/" + organization.getId() + "/work-items?parentId=" + workItem.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(expected))));
     }
 
     @Test
@@ -119,15 +168,17 @@ class WorkItemControllerTestIT {
                 .name("Created")
                 .priority(1)
                 .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.BACKLOG)
                 .build();
 
         WorkItem expectedItem = WorkItem.builder()
-                .id(2)
+                .id(3)
                 .description(workItemRequest.getDescription())
                 .name(workItemRequest.getName())
                 .priority(workItemRequest.getPriority())
                 .type(workItemRequest.getType())
                 .organization(organization)
+                .status(WorkItemStatus.BACKLOG)
                 .build();
 
         mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
@@ -140,6 +191,60 @@ class WorkItemControllerTestIT {
 
         WorkItem persistentItem = workItemRepository.getById(expectedItem.getId());
         assertEquals(expectedItem, persistentItem);
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "testUser")
+    void postShouldCreateAWorkItemWithParent() throws Exception {
+        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+                .description("Created")
+                .name("Created")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.BACKLOG)
+                .parentId(workItem.getId())
+                .build();
+
+        WorkItem expectedItem = WorkItem.builder()
+                .id(3)
+                .description(workItemRequest.getDescription())
+                .name(workItemRequest.getName())
+                .priority(workItemRequest.getPriority())
+                .type(workItemRequest.getType())
+                .organization(organization)
+                .status(workItemRequest.getStatus())
+                .parent(workItem)
+                .build();
+
+        mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(workItemRequest))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedItem)));
+
+        WorkItem persistentItem = workItemRepository.getById(expectedItem.getId());
+        assertEquals(expectedItem, persistentItem);
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    void postShouldReturnBadRequestNonExistentParent() throws Exception {
+        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+                .description("Created")
+                .name("Created")
+                .priority(1)
+                .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.BACKLOG)
+                .parentId(200)
+                .build();
+
+        mockMvc.perform(post("/organizations/" + organization.getId() + "/work-items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(workItemRequest))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -168,6 +273,7 @@ class WorkItemControllerTestIT {
                 .name("Updated")
                 .priority(1)
                 .type(WorkItemType.FEATURE)
+                .status(WorkItemStatus.READY)
                 .build();
 
         mockMvc.perform(patch("/organizations/" + organization.getId() + "/work-items/" + workItem.getId())

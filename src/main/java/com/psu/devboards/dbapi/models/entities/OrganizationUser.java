@@ -28,7 +28,7 @@ public class OrganizationUser {
 
     @ManyToOne
     @MapsId("organizationId")
-    @JsonProperty("organization_id")
+    @JsonProperty("organizationId")
     @JoinColumn(name = "organization_id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -36,14 +36,14 @@ public class OrganizationUser {
 
     @ManyToOne
     @MapsId("userId")
-    @JsonProperty("user_id")
+    @JsonProperty("userId")
     @JoinColumn(name = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private User user;
 
     @OneToOne
-    @JsonProperty("role_id")
+    @JsonProperty("roleId")
     @JoinColumn(name = "role_id", nullable = false)
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")

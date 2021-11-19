@@ -1,6 +1,7 @@
 package com.psu.devboards.dbapi.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
 import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,9 @@ public class WorkItemRequest {
     @NotNull(message = "Work item type must be any of {TASK, STORY, FEATURE}.")
     private WorkItemType type;
 
+    @NotNull(message = "Work item status must be any of {BACKLOG, READY, IN_PROGRESS, VERIFY, DONE}.")
+    private WorkItemStatus status;
+
     @NotBlank(message = "Work item name cannot be blank.")
     @NotNull(message = "Work item name must be defined.")
     private String name;
@@ -25,6 +29,8 @@ public class WorkItemRequest {
     private Integer priority;
 
     private String description;
+
+    private Integer parentId;
 
     @JsonIgnore
     private Integer organizationId;

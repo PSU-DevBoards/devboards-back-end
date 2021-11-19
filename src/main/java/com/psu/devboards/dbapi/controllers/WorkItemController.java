@@ -1,7 +1,9 @@
 package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
 import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
+import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
 import com.psu.devboards.dbapi.services.WorkItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -12,10 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Set;
+import java.util.List;
 
 @Validated
 @RestController
@@ -30,8 +33,16 @@ public class WorkItemController {
 
     @GetMapping
     @PreAuthorize("@workItemPermissionChecker.hasListPermission(#orgId)")
-    public Set<WorkItem> listWorkItems(@PathVariable Integer orgId) {
-        return workItemService.getAllWorkItems(orgId);
+    public List<WorkItem> listWorkItems(@PathVariable Integer orgId,
+                                        @RequestParam(required = false) WorkItemStatus status,
+                                        @RequestParam(required = false) Integer parentId) {
+        WorkItemSpecification specification = WorkItemSpecification.builder()
+                .organizationId(orgId)
+                .status(status)
+                .parentId(parentId)
+                .build();
+
+        return workItemService.list(specification);
     }
 
     @PostMapping()
