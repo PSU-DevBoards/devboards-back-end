@@ -2,6 +2,8 @@ package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
+import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
 import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
@@ -25,14 +27,29 @@ public class WorkItemService extends FilterableCrudService<Integer, WorkItem, Wo
 
     @Override
     protected WorkItem updateEntityFromRequest(WorkItemRequest request, WorkItem entity) {
-        entity.setName(request.getName());
-        entity.setType(request.getType());
-        entity.setDescription(request.getDescription());
-        entity.setPriority(request.getPriority());
-        entity.setStatus(request.getStatus());
+        String requestName = request.getName();
+        WorkItemType requestType = request.getType();
+        String requestDescription = request.getDescription();
+        Integer requestPriority = request.getPriority();
+        WorkItemStatus requestStatus = request.getStatus();
+
+        if( requestName != null ){
+            entity.setName(request.getName());
+        }
+        if( requestType != null ){
+            entity.setType(request.getType());
+        }
+        if( requestDescription != null ){
+            entity.setDescription(request.getDescription());
+        }
+        if( requestPriority != null ){
+            entity.setPriority(request.getPriority());
+        }
+        if( requestStatus != null ){
+            entity.setStatus(request.getStatus());
+        }
 
         checkSetWorkItemParent(request, entity);
-
         return entity;
     }
 
