@@ -2,10 +2,9 @@ package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.WorkItem;
 import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
 import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
 import com.psu.devboards.dbapi.models.requests.WorkItemPatchRequest;
-import com.psu.devboards.dbapi.models.entities.WorkItemType;
-import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
 import com.psu.devboards.dbapi.services.WorkItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -71,7 +70,8 @@ public class WorkItemController {
 
     @PatchMapping("/{workItemId}")
     @PreAuthorize("hasPermission(#workItemId, 'WorkItem', 'edit')")
-    public void patchWorkItem(@PathVariable Integer workItemId, @Valid @RequestBody WorkItemPatchRequest workItemRequest,
+    public void patchWorkItem(@PathVariable Integer workItemId,
+                              @Valid @RequestBody WorkItemPatchRequest workItemRequest,
                               @PathVariable String orgId) {
         workItemService.updateById(workItemId, workItemRequest);
     }

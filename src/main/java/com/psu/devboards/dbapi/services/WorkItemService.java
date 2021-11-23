@@ -2,15 +2,14 @@ package com.psu.devboards.dbapi.services;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
-import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
-import com.psu.devboards.dbapi.models.entities.WorkItemType;
-import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
 import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
 import com.psu.devboards.dbapi.repositories.WorkItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 /**
  * Singleton service for interacting with work items.
@@ -27,27 +26,11 @@ public class WorkItemService extends FilterableCrudService<Integer, WorkItem, Wo
 
     @Override
     protected WorkItem updateEntityFromRequest(WorkItemRequest request, WorkItem entity) {
-        String requestName = request.getName();
-        WorkItemType requestType = request.getType();
-        String requestDescription = request.getDescription();
-        Integer requestPriority = request.getPriority();
-        WorkItemStatus requestStatus = request.getStatus();
-
-        if( requestName != null ){
-            entity.setName(request.getName());
-        }
-        if( requestType != null ){
-            entity.setType(request.getType());
-        }
-        if( requestDescription != null ){
-            entity.setDescription(request.getDescription());
-        }
-        if( requestPriority != null ){
-            entity.setPriority(request.getPriority());
-        }
-        if( requestStatus != null ){
-            entity.setStatus(request.getStatus());
-        }
+        Optional.ofNullable(request.getName()).ifPresent(entity::setName);
+        Optional.ofNullable(request.getType()).ifPresent(entity::setType);
+        Optional.ofNullable(request.getDescription()).ifPresent(entity::setDescription);
+        Optional.ofNullable(request.getPriority()).ifPresent(entity::setPriority);
+        Optional.ofNullable(request.getStatus()).ifPresent(entity::setStatus);
 
         checkSetWorkItemParent(request, entity);
         return entity;

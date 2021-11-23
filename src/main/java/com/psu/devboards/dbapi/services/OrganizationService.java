@@ -32,7 +32,7 @@ public class OrganizationService extends CrudService<Integer, Organization, Orga
 
     @Override
     protected Organization updateEntityFromRequest(OrganizationRequest request, Organization entity) {
-        if (!entity.getName().equals(request.getName())) {
+        if (request.getName() != null && !entity.getName().equals(request.getName())) {
             validateUniqueOrganization(request);
             entity.setName(request.getName());
         }

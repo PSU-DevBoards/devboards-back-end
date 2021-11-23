@@ -2,7 +2,8 @@ package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.OrganizationUserKey;
-import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationUserFullRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationUserPatchRequest;
 import com.psu.devboards.dbapi.services.OrganizationUserService;
 import com.psu.devboards.dbapi.services.SendGridService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class OrganizationUserController {
     @PostMapping()
     @PreAuthorize("@organizationUserPermissionChecker.hasCreatePermission(#orgId)")
     public OrganizationUser postOrganizationUser(@PathVariable Integer orgId,
-                                                 @Valid @RequestBody OrganizationUserRequest organizationUserRequest) {
+                                                 @Valid @RequestBody OrganizationUserFullRequest organizationUserRequest) {
         organizationUserRequest.setOrganizationId(orgId);
 
         // Create user and send welcome email
@@ -64,7 +65,7 @@ public class OrganizationUserController {
     @PatchMapping("/{userId}")
     @PreAuthorize("@organizationUserPermissionChecker.hasPermission(#orgId, #userId, 'edit')")
     public void patchOrganizationUser(@PathVariable Integer orgId, @PathVariable Integer userId,
-                                      @RequestBody OrganizationUserRequest organizationUserRequest) {
+                                      @RequestBody OrganizationUserPatchRequest organizationUserRequest) {
         organizationUserService.updateById(new OrganizationUserKey(orgId, userId), organizationUserRequest);
     }
 }

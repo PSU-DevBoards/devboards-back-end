@@ -5,7 +5,7 @@ import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.models.entities.User;
-import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationUserFullRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
 import com.psu.devboards.dbapi.repositories.RoleRepository;
 import com.psu.devboards.dbapi.repositories.UserRepository;
@@ -88,7 +88,7 @@ class OrganizationUserControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldAddOrganizationUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest(user2.getEmail(), role.getId());
+        OrganizationUserFullRequest userRequest = new OrganizationUserFullRequest(user2.getEmail(), role.getId());
 
         mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
                         .content(objectMapper.writeValueAsString(userRequest))
@@ -120,7 +120,7 @@ class OrganizationUserControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldRespond200WhenAddingNonExistentUser() throws Exception {
-        OrganizationUserRequest userRequest = new OrganizationUserRequest("notexist@email.com", 1);
+        OrganizationUserFullRequest userRequest = new OrganizationUserFullRequest("notexist@email.com", 1);
 
         mockMvc.perform(post("/organizations/" + organization.getId() + "/users")
                         .content(objectMapper.writeValueAsString(userRequest))
@@ -141,7 +141,7 @@ class OrganizationUserControllerTestIT {
         organization.getUsers().add(new OrganizationUser(organization, user2, role));
         organizationRepository.save(organization);
 
-        OrganizationUserRequest organizationUserRequest = OrganizationUserRequest.builder()
+        OrganizationUserFullRequest organizationUserRequest = OrganizationUserFullRequest.builder()
                 .roleId(role2.getId())
                 .build();
 
