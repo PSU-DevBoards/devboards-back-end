@@ -4,6 +4,8 @@ import com.psu.devboards.dbapi.models.entities.WorkItem;
 import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
 import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
 import com.psu.devboards.dbapi.models.requests.WorkItemPatchRequest;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
+import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
 import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
 import com.psu.devboards.dbapi.services.WorkItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,10 +38,12 @@ public class WorkItemController {
     @PreAuthorize("@workItemPermissionChecker.hasListPermission(#orgId)")
     public List<WorkItem> listWorkItems(@PathVariable Integer orgId,
                                         @RequestParam(required = false) WorkItemStatus status,
+                                        @RequestParam(required = false) WorkItemType type,
                                         @RequestParam(required = false) Integer parentId) {
         WorkItemSpecification specification = WorkItemSpecification.builder()
                 .organizationId(orgId)
                 .status(status)
+                .type(type)
                 .parentId(parentId)
                 .build();
 

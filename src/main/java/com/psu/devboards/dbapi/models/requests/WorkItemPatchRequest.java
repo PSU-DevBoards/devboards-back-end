@@ -19,7 +19,6 @@ public class WorkItemPatchRequest implements WorkItemRequest {
 
     private WorkItemStatus status;
 
-    @NotBlank(message = "Work item name cannot be blank.")
     private String name;
 
     private Integer priority;
