@@ -1,7 +1,8 @@
 package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.Organization;
-import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationFullRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationPatchRequest;
 import com.psu.devboards.dbapi.services.OrganizationService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -34,14 +35,14 @@ public class OrganizationController {
     }
 
     @PostMapping
-    public Organization postOrganization(@Valid @RequestBody OrganizationRequest organizationRequest) {
+    public Organization postOrganization(@Valid @RequestBody OrganizationFullRequest organizationRequest) {
         return organizationService.create(organizationRequest);
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasPermission(#id, 'Organization', 'edit')")
     public void patchOrganization(@PathVariable Integer id,
-                                  @Valid @RequestBody OrganizationRequest organizationRequest) {
+                                  @Valid @RequestBody OrganizationPatchRequest organizationRequest) {
         organizationService.updateById(id, organizationRequest);
     }
 

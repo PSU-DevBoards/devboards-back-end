@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 /**
  * Singleton service for interacting with work items.
  */
@@ -24,14 +26,13 @@ public class WorkItemService extends FilterableCrudService<Integer, WorkItem, Wo
 
     @Override
     protected WorkItem updateEntityFromRequest(WorkItemRequest request, WorkItem entity) {
-        entity.setName(request.getName());
-        entity.setType(request.getType());
-        entity.setDescription(request.getDescription());
-        entity.setPriority(request.getPriority());
-        entity.setStatus(request.getStatus());
+        Optional.ofNullable(request.getName()).ifPresent(entity::setName);
+        Optional.ofNullable(request.getType()).ifPresent(entity::setType);
+        Optional.ofNullable(request.getDescription()).ifPresent(entity::setDescription);
+        Optional.ofNullable(request.getPriority()).ifPresent(entity::setPriority);
+        Optional.ofNullable(request.getStatus()).ifPresent(entity::setStatus);
 
         checkSetWorkItemParent(request, entity);
-
         return entity;
     }
 

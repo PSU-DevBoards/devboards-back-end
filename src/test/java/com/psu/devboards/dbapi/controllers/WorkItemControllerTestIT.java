@@ -8,7 +8,7 @@ import com.psu.devboards.dbapi.models.entities.User;
 import com.psu.devboards.dbapi.models.entities.WorkItem;
 import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
 import com.psu.devboards.dbapi.models.entities.WorkItemType;
-import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
+import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
 import com.psu.devboards.dbapi.repositories.RoleRepository;
 import com.psu.devboards.dbapi.repositories.UserRepository;
@@ -163,7 +163,7 @@ class WorkItemControllerTestIT {
     @Transactional
     @WithMockUser(username = "testUser")
     void postShouldCreateAWorkItem() throws Exception {
-        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+        WorkItemFullRequest workItemRequest = WorkItemFullRequest.builder()
                 .description("Created")
                 .name("Created")
                 .priority(1)
@@ -197,7 +197,7 @@ class WorkItemControllerTestIT {
     @Transactional
     @WithMockUser(username = "testUser")
     void postShouldCreateAWorkItemWithParent() throws Exception {
-        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+        WorkItemFullRequest workItemRequest = WorkItemFullRequest.builder()
                 .description("Created")
                 .name("Created")
                 .priority(1)
@@ -231,7 +231,7 @@ class WorkItemControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void postShouldReturnBadRequestNonExistentParent() throws Exception {
-        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+        WorkItemFullRequest workItemRequest = WorkItemFullRequest.builder()
                 .description("Created")
                 .name("Created")
                 .priority(1)
@@ -250,7 +250,7 @@ class WorkItemControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void postShouldReturnBadRequestIfNameIsBlank() throws Exception {
-        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+        WorkItemFullRequest workItemRequest = WorkItemFullRequest.builder()
                 .description("Created")
                 .name("")
                 .priority(1)
@@ -268,12 +268,9 @@ class WorkItemControllerTestIT {
     @Transactional
     @WithMockUser(username = "testUser")
     void shouldUpdateAWorkItem() throws Exception {
-        WorkItemRequest workItemRequest = WorkItemRequest.builder()
+        WorkItemFullRequest workItemRequest = WorkItemFullRequest.builder()
                 .description("Updated")
                 .name("Updated")
-                .priority(1)
-                .type(WorkItemType.FEATURE)
-                .status(WorkItemStatus.READY)
                 .build();
 
         mockMvc.perform(patch("/organizations/" + organization.getId() + "/work-items/" + workItem.getId())
@@ -283,6 +280,7 @@ class WorkItemControllerTestIT {
 
         WorkItem persistentItem = workItemRepository.getById(workItem.getId());
         assertEquals(persistentItem.getDescription(), workItemRequest.getDescription());
+        assertEquals(workItem.getStatus(), persistentItem.getStatus());
     }
 
     @Test

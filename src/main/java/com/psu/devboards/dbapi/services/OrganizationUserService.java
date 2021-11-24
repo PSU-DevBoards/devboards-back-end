@@ -9,6 +9,7 @@ import com.psu.devboards.dbapi.models.requests.OrganizationUserRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationUserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -42,8 +43,11 @@ public class OrganizationUserService extends CrudService<OrganizationUserKey, Or
 
     @Override
     protected OrganizationUser updateEntityFromRequest(OrganizationUserRequest request, OrganizationUser entity) {
-        Role role = roleService.getById(request.getRoleId());
-        entity.setRole(role);
+        Optional.ofNullable(request.getRoleId()).ifPresent(roleId -> {
+            Role role = roleService.getById(request.getRoleId());
+            entity.setRole(role);
+        });
+
         return entity;
     }
 

@@ -2,7 +2,9 @@ package com.psu.devboards.dbapi.controllers;
 
 import com.psu.devboards.dbapi.models.entities.WorkItem;
 import com.psu.devboards.dbapi.models.entities.WorkItemStatus;
-import com.psu.devboards.dbapi.models.requests.WorkItemRequest;
+import com.psu.devboards.dbapi.models.entities.WorkItemType;
+import com.psu.devboards.dbapi.models.requests.WorkItemFullRequest;
+import com.psu.devboards.dbapi.models.requests.WorkItemPatchRequest;
 import com.psu.devboards.dbapi.models.specifications.WorkItemSpecification;
 import com.psu.devboards.dbapi.services.WorkItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,10 +37,12 @@ public class WorkItemController {
     @PreAuthorize("@workItemPermissionChecker.hasListPermission(#orgId)")
     public List<WorkItem> listWorkItems(@PathVariable Integer orgId,
                                         @RequestParam(required = false) WorkItemStatus status,
+                                        @RequestParam(required = false) WorkItemType type,
                                         @RequestParam(required = false) Integer parentId) {
         WorkItemSpecification specification = WorkItemSpecification.builder()
                 .organizationId(orgId)
                 .status(status)
+                .type(type)
                 .parentId(parentId)
                 .build();
 
@@ -47,7 +51,7 @@ public class WorkItemController {
 
     @PostMapping()
     @PreAuthorize("@workItemPermissionChecker.hasCreatePermission(#orgId)")
-    public WorkItem postWorkItem(@PathVariable Integer orgId, @Valid @RequestBody WorkItemRequest workItemRequest) {
+    public WorkItem postWorkItem(@PathVariable Integer orgId, @Valid @RequestBody WorkItemFullRequest workItemRequest) {
         workItemRequest.setOrganizationId(orgId);
         return workItemService.create(workItemRequest);
     }
@@ -66,7 +70,8 @@ public class WorkItemController {
 
     @PatchMapping("/{workItemId}")
     @PreAuthorize("hasPermission(#workItemId, 'WorkItem', 'edit')")
-    public void patchWorkItem(@PathVariable Integer workItemId, @Valid @RequestBody WorkItemRequest workItemRequest,
+    public void patchWorkItem(@PathVariable Integer workItemId,
+                              @Valid @RequestBody WorkItemPatchRequest workItemRequest,
                               @PathVariable String orgId) {
         workItemService.updateById(workItemId, workItemRequest);
     }

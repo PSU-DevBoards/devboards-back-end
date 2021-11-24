@@ -5,7 +5,8 @@ import com.psu.devboards.dbapi.models.entities.Organization;
 import com.psu.devboards.dbapi.models.entities.OrganizationUser;
 import com.psu.devboards.dbapi.models.entities.Role;
 import com.psu.devboards.dbapi.models.entities.User;
-import com.psu.devboards.dbapi.models.requests.OrganizationRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationFullRequest;
+import com.psu.devboards.dbapi.models.requests.OrganizationPatchRequest;
 import com.psu.devboards.dbapi.repositories.OrganizationRepository;
 import com.psu.devboards.dbapi.repositories.RoleRepository;
 import com.psu.devboards.dbapi.repositories.UserRepository;
@@ -77,7 +78,7 @@ class OrganizationControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldCreateOrganization() throws Exception {
-        OrganizationRequest organizationRequest = new OrganizationRequest("newOrganization");
+        OrganizationFullRequest organizationRequest = new OrganizationFullRequest("newOrganization");
 
         MvcResult response = mockMvc.perform(post("/organizations")
                         .content(objectMapper.writeValueAsString(organizationRequest))
@@ -92,7 +93,7 @@ class OrganizationControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldReturnConflictIfOrganizationWithNameExists() throws Exception {
-        OrganizationRequest organizationRequest = new OrganizationRequest("testOrganization");
+        OrganizationFullRequest organizationRequest = new OrganizationFullRequest("testOrganization");
 
         mockMvc.perform(post("/organizations")
                         .content(objectMapper.writeValueAsString(organizationRequest))
@@ -103,7 +104,7 @@ class OrganizationControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldUpdateOrganization() throws Exception {
-        OrganizationRequest organizationRequest = new OrganizationRequest("updatedOrganization");
+        OrganizationFullRequest organizationRequest = new OrganizationFullRequest("updatedOrganization");
 
         mockMvc.perform(patch("/organizations/" + organization.getId())
                         .content(objectMapper.writeValueAsString(organizationRequest))
@@ -120,9 +121,20 @@ class OrganizationControllerTestIT {
 
     @Test
     @WithMockUser(username = "testUser")
+    void shouldAllowAPatchRequestWithNoName() throws Exception {
+        OrganizationPatchRequest organizationRequest = new OrganizationPatchRequest();
+
+        mockMvc.perform(patch("/organizations/" + organization.getId())
+                        .content(objectMapper.writeValueAsString(organizationRequest))
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
     void shouldReturnConflictIfUpdatingToExitingOrganizationName() throws Exception {
         organizationRepository.save(new Organization("updatedOrganization", user));
-        OrganizationRequest organizationRequest = new OrganizationRequest("updatedOrganization");
+        OrganizationFullRequest organizationRequest = new OrganizationFullRequest("updatedOrganization");
 
         mockMvc.perform(patch("/organizations/" + organization.getId())
                         .content(objectMapper.writeValueAsString(organizationRequest))
@@ -133,7 +145,7 @@ class OrganizationControllerTestIT {
     @Test
     @WithMockUser(username = "testUser")
     void shouldReturnOkIfUpdatingToSameNameOrganizationHad() throws Exception {
-        OrganizationRequest organizationRequest = new OrganizationRequest("testOrganization");
+        OrganizationFullRequest organizationRequest = new OrganizationFullRequest("testOrganization");
 
         mockMvc.perform(patch("/organizations/" + organization.getId())
                         .content(objectMapper.writeValueAsString(organizationRequest))
