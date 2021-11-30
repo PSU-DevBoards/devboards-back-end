@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,6 +28,9 @@ public class WorkItemPatchRequest implements WorkItemRequest {
     private Integer priority;
 
     private String description;
+
+    @Min(0)
+    private Integer estimate;
 
     private Integer parentId;
 

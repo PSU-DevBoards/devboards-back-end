@@ -15,6 +15,8 @@ public interface WorkItemRequest {
 
     String getDescription();
 
+    Integer getEstimate();
+
     Integer getParentId();
 
     Integer getOrganizationId();

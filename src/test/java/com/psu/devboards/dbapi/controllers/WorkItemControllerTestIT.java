@@ -204,6 +204,7 @@ class WorkItemControllerTestIT {
                 .type(WorkItemType.FEATURE)
                 .status(WorkItemStatus.BACKLOG)
                 .parentId(workItem.getId())
+                .estimate(5)
                 .build();
 
         WorkItem expectedItem = WorkItem.builder()
@@ -214,6 +215,7 @@ class WorkItemControllerTestIT {
                 .type(workItemRequest.getType())
                 .organization(organization)
                 .status(workItemRequest.getStatus())
+                .estimate(workItemRequest.getEstimate())
                 .parent(workItem)
                 .build();
 
