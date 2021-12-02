@@ -31,6 +31,7 @@ public class WorkItemService extends FilterableCrudService<Integer, WorkItem, Wo
         Optional.ofNullable(request.getDescription()).ifPresent(entity::setDescription);
         Optional.ofNullable(request.getPriority()).ifPresent(entity::setPriority);
         Optional.ofNullable(request.getStatus()).ifPresent(entity::setStatus);
+        Optional.ofNullable(request.getEstimate()).ifPresent(entity::setEstimate);
 
         checkSetWorkItemParent(request, entity);
         return entity;
@@ -45,6 +46,7 @@ public class WorkItemService extends FilterableCrudService<Integer, WorkItem, Wo
                 .type(request.getType())
                 .status(request.getStatus())
                 .description(request.getDescription())
+                .estimate(request.getEstimate())
                 .priority(request.getPriority())
                 .build();
 

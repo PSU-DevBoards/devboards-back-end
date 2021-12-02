@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +30,9 @@ public class WorkItemFullRequest implements WorkItemRequest {
     private Integer priority;
 
     private String description;
+
+    @Min(0)
+    private Integer estimate;
 
     private Integer parentId;
 

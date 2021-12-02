@@ -60,6 +60,9 @@ public class WorkItem {
     @Column
     private String description;
 
+    @Column
+    private Integer estimate;
+
     @ManyToOne
     @JsonProperty("organizationId")
     @JsonIdentityReference(alwaysAsId = true)
