@@ -23,3 +23,5 @@ email:
   from: ${EMAIL_FROM}
   template-ids:
     org-invite: ${EMAIL_ORG_INVITE_TEMPLATE_ID:d-5fb97c2ac73b4cb4a074790da72eb8fb}
+security:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000}
