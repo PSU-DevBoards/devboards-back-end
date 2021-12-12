@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.sendgrid:sendgrid-java'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     runtimeOnly 'com.h2database:h2:1.4.200'
+    runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'mysql:mysql-connector-java:8.0.25'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.4'
