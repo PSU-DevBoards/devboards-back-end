@@ -20,6 +20,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Creates the security configuration for the web application. Determines which routes should be authenticated with
+ * {@link HttpSecurity}, provides CORS configuration with {@link CorsConfigurationSource}, and establishes a
+ * {@link AudienceValidator} for the {@link JwtDecoder}.
+ *
+ * @see WebSecurityConfigurerAdapter
+ */
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 

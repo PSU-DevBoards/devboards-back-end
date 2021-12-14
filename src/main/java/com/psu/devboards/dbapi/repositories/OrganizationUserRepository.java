@@ -10,6 +10,4 @@ import java.util.Optional;
 
 public interface OrganizationUserRepository extends JpaRepository<OrganizationUser, OrganizationUserKey> {
     Optional<OrganizationUser> findByUserAndOrganization(User user, Organization organization);
-
-    Optional<OrganizationUser> findByUserAndOrganizationId(User user, Integer organizationId);
 }

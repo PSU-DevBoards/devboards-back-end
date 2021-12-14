@@ -1,5 +1,8 @@
 package com.psu.devboards.dbapi.exceptions;
 
+/**
+ * Exception representing a unique database column restraint violation.
+ */
 public class UniqueViolationException extends RuntimeException {
 
     private final String entity;

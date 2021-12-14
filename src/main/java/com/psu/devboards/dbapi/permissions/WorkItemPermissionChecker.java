@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
+/**
+ * Permission checker for WorkItem resources.
+ */
 @Component
 public class WorkItemPermissionChecker extends PermissionChecker {
 

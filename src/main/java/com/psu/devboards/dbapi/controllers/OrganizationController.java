@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * REST Controller for all {@link Organization} related resources.
+ */
 @Validated
 @RestController
 @RequestMapping("organizations")
@@ -28,17 +31,35 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
+    /**
+     * Gets a single organization by its id.
+     *
+     * @param id The id to use to retrieve the organization.
+     * @return The found organization.
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasPermission(#id, 'Organization', 'view')")
     public Organization getOrganization(@PathVariable Integer id) {
         return organizationService.getById(id);
     }
 
+    /**
+     * Creates a new organization.
+     *
+     * @param organizationRequest The request body containing values for the organization.
+     * @return The created organization.
+     */
     @PostMapping
     public Organization postOrganization(@Valid @RequestBody OrganizationFullRequest organizationRequest) {
         return organizationService.create(organizationRequest);
     }
 
+    /**
+     * Performs a partial update on an organization by its id.
+     *
+     * @param id                  The id of the organization to update.
+     * @param organizationRequest Request body containing the update values.
+     */
     @PatchMapping("/{id}")
     @PreAuthorize("hasPermission(#id, 'Organization', 'edit')")
     public void patchOrganization(@PathVariable Integer id,
@@ -46,6 +67,11 @@ public class OrganizationController {
         organizationService.updateById(id, organizationRequest);
     }
 
+    /**
+     * Deletes an organization by its id.
+     *
+     * @param id The id of the organization to delete.
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasPermission(#id, 'Organization', 'delete')")
     public void deleteOrganization(@PathVariable Integer id) {

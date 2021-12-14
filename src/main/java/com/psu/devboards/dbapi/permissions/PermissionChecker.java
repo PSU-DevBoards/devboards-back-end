@@ -65,6 +65,12 @@ public abstract class PermissionChecker {
                         .findAny()).isPresent();
     }
 
+    /**
+     * Determines if the current user has create permissions on the resource within an organization.
+     *
+     * @param organizationId The id of the organization to check for permissions in.
+     * @return True if the user has permission, false otherwise.
+     */
     public boolean hasCreatePermission(Integer organizationId) {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.getByUsername(principal.getName());
@@ -72,6 +78,12 @@ public abstract class PermissionChecker {
         return hasRolePermission(organizationId, user, "create");
     }
 
+    /**
+     * Determines if the current user has list permissions on the resource within an organization.
+     *
+     * @param organizationId The id of the organization to check for permissions in.
+     * @return True if the user has permission, false otherwise.
+     */
     public boolean hasListPermission(Integer organizationId) {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.getByUsername(principal.getName());
@@ -79,14 +91,35 @@ public abstract class PermissionChecker {
         return hasRolePermission(organizationId, user, "list");
     }
 
+    /**
+     * Determines if the current user has view permissions on the resource within an organization.
+     *
+     * @param user     The user to check for permissions on.
+     * @param targetId The id of the object to user is attempting to access.
+     * @return True if the user has permission, false otherwise.
+     */
     protected boolean hasViewPermission(User user, Serializable targetId) {
         return hasRolePermission(getOrganizationId(targetId), user, "view");
     }
 
+    /**
+     * Determines if the current user has edit permissions on the resource within an organization.
+     *
+     * @param user     The user to check for permissions on.
+     * @param targetId The id of the object to user is attempting to access.
+     * @return True if the user has permission, false otherwise.
+     */
     protected boolean hasEditPermission(User user, Serializable targetId) {
         return hasRolePermission(getOrganizationId(targetId), user, "edit");
     }
 
+    /**
+     * Determines if the current user has delete permissions on the resource within an organization.
+     *
+     * @param user     The user to check for permissions on.
+     * @param targetId The id of the object to user is attempting to access.
+     * @return True if the user has permission, false otherwise.
+     */
     protected boolean hasDeletePermission(User user, Serializable targetId) {
         return hasRolePermission(getOrganizationId(targetId), user, "delete");
     }

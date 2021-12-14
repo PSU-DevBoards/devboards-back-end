@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
+/**
+ * Permission checker for Organization resources.
+ */
 @Component
 public class OrganizationPermissionChecker extends PermissionChecker {
 

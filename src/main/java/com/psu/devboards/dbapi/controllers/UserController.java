@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.Set;
 
+/**
+ * REST Controller for all {@link User} related resources.
+ */
 @RestController
 @RequestMapping("users")
 public class UserController {
@@ -19,11 +22,23 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Gets the current authenticated user.
+     *
+     * @param principal The current authenticated principal.
+     * @return The current user.
+     */
     @GetMapping("/me")
     public User getCurrentUser(Principal principal) {
         return userService.getByUserName(principal.getName());
     }
 
+    /**
+     * Gets the current authenticated users organizations.
+     *
+     * @param principal The current authenticated principal.
+     * @return A list of the organizations the current user owns.
+     */
     @GetMapping("/me/organizations")
     public Set<Organization> getCurrentUserOrganizations(Principal principal) {
         User user = userService.getByUserName(principal.getName());

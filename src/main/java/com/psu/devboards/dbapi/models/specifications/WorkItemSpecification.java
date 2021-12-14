@@ -13,6 +13,9 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * JPA Specification for WorkItem filters.
+ */
 @Builder
 public class WorkItemSpecification implements Specification<WorkItem> {
 
@@ -21,7 +24,9 @@ public class WorkItemSpecification implements Specification<WorkItem> {
     private final Integer organizationId;
     private final Integer parentId;
 
-
+    /**
+     * Builds a Predicate based on the supplied filters.
+     */
     @Override
     public Predicate toPredicate(Root<WorkItem> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
