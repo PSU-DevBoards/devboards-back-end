@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Service for interacting with the SendGrid API and sending customer communications.
+ *
+ * @see <a href="https://github.com/sendgrid/sendgrid-java">SendGrid Java API Documentation</a>
+ */
 @Slf4j
 @Service
 public class SendGridService {
@@ -28,6 +33,13 @@ public class SendGridService {
         this.from = new Email(fromEmail);
     }
 
+    /**
+     * Sends an organization invitation welcome email.
+     *
+     * @param toEmail          The email to invite.
+     * @param organizationName The name of the organization the email is being invited to.
+     * @param organizationId   The id of the organization the email is being invited to.
+     */
     public void sendOrgInviteEmail(String toEmail, String organizationName, String organizationId) {
         Map<String, String> templateData = new HashMap<>();
         templateData.put("organization_name", organizationName);
@@ -36,6 +48,11 @@ public class SendGridService {
         sendTemplateEmail(orgInviteTemplateId, toEmail, templateData);
     }
 
+    /**
+     * @param templateId   The sendgrid dynamic template id.
+     * @param toEmail      The email to send the communication to.
+     * @param templateData A map of data for the template, keys of the map should correlate to template variables.
+     */
     private void sendTemplateEmail(String templateId, String toEmail, Map<String, String> templateData) {
 
         Personalization personalization = new Personalization();
@@ -52,6 +69,11 @@ public class SendGridService {
         sendEmailRequest(mail);
     }
 
+    /**
+     * Sends an email request to the SendGrid API.
+     *
+     * @param mail The created mail object.
+     */
     private void sendEmailRequest(Mail mail) {
         try {
             Request request = new Request();

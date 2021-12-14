@@ -55,6 +55,12 @@ public class OrganizationService extends CrudService<Integer, Organization, Orga
         return organization;
     }
 
+    /**
+     * Ensures that the name of the organization being created is unique.
+     *
+     * @param request The incoming request body.
+     * @throws UniqueViolationException Thrown to generate an API response.
+     */
     private void validateUniqueOrganization(OrganizationRequest request) throws UniqueViolationException {
         ((OrganizationRepository) repository).findByName(request.getName())
                 .ifPresent(organization -> {

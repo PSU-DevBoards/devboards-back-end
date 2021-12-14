@@ -18,6 +18,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Informs REST controllers of how to handle responses for exceptions.
+ *
+ * @see ControllerAdvice
+ * @see ResponseEntityExceptionHandler
+ */
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 

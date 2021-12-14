@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
+/**
+ * Class that defines openapi generation properties for the project.
+ *
+ * @see <a href="https://springdoc.org/#Introduction">https://springdoc.org/#Introduction</a>
+ */
 @Configuration
 public class OpenAPIConfig {
 

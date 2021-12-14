@@ -7,6 +7,9 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.stream.Stream;
 
+/**
+ * Converts the {@link WorkItemStatus} enum to and from a more friendly string format for database storage.
+ */
 @Component
 @Converter(autoApply = true)
 public class WorkItemStatusAttributeConverter implements AttributeConverter<WorkItemStatus, String> {
